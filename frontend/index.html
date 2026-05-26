@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interview Prep</title>
+  <style>
+    :root {
+      --bg: #f0f4f8; --bg2: #ffffff; --bg3: #f8fafc;
+      --text: #111827; --text2: #6b7280; --border: #e5e7eb;
+      --blue: #3B82F6; --blue-light: #EFF6FF; --blue-dark: #1D4ED8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .hero { background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 50%, #60A5FA 100%); padding: 4rem 2rem; text-align: center; }
+    .hero h1 { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+    .hero h1 span { color: #BAE6FD; }
+    .hero p { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 2rem; }
+
+    .container { max-width: 600px; margin: -3rem auto 3rem; padding: 0 1rem; position: relative; z-index: 2; }
+    .card { background: var(--bg2); border-radius: 20px; padding: 2rem; box-shadow: 0 8px 40px rgba(0,0,0,0.12); border: 1px solid var(--border); }
+    .card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .card p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
+
+    .frow { margin-bottom: 16px; }
+    .frow label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+    .frow input, .frow select { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); font-size: 14px; font-family: inherit; color: var(--text); }
+    .frow input:focus, .frow select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+    .upload-box { border: 2px dashed var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; background: var(--bg3); position: relative; transition: all .2s; }
+    .upload-box:hover { border-color: var(--blue); background: var(--blue-light); }
+    .upload-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-box .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .upload-box p { font-size: 13px; color: var(--text2); }
+    .upload-box span { font-size: 11px; color: var(--text2); opacity: .7; }
+    .file-selected { font-size: 13px; color: var(--blue); margin-top: 8px; font-weight: 500; display: none; }
+
+    .btn { width: 100%; padding: 13px; border-radius: 10px; border: none; background: var(--blue); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; margin-top: 8px; }
+    .btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn:disabled { background: var(--border); color: var(--text2); cursor: not-allowed; transform: none; }
+
+    .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 2rem auto; max-width: 600px; padding: 0 1rem; }
+    .feature { background: var(--bg2); border-radius: 14px; padding: 1.2rem; border: 1px solid var(--border); text-align: center; }
+    .feature .emoji { font-size: 2rem; margin-bottom: 8px; }
+    .feature h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .feature p { font-size: 12px; color: var(--text2); }
+
+    .loading { display: none; text-align: center; padding: 2rem; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { color: var(--text2); font-size: 14px; }
+
+    .error { background: #FEE2E2; color: #991B1B; border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🎯 AI Interview <span>Prep</span></h1>
+  <p>Upload your resume — AI will generate personalized interview questions just for you!</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <h2>Start Your Mock Interview</h2>
+    <p>Fill in your details and upload your resume to begin</p>
+
+    <div id="form-section">
+      <div class="frow">
+        <label>Your Name *</label>
+        <input type="text" id="name" placeholder="e.g. Nimit Rajput">
+      </div>
+      <div class="frow">
+        <label>Target Role *</label>
+        <select id="role">
+          <option value="">Select a role...</option>
+          <option value="Frontend Developer">Frontend Developer</option>
+          <option value="Backend Developer">Backend Developer</option>
+          <option value="Full Stack Developer">Full Stack Developer</option>
+          <option value="React Developer">React Developer</option>
+          <option value="Node.js Developer">Node.js Developer</option>
+          <option value="Software Engineer">Software Engineer</option>
+          <option value="Web Developer">Web Developer</option>
+        </select>
+      </div>
+      <div class="frow">
+        <label>Upload Resume (PDF) *</label>
+        <div class="upload-box" id="upload-box">
+          <input type="file" id="resume" accept=".pdf" onchange="fileSelected(event)">
+          <div class="icon">📄</div>
+          <p>Click to upload your resume</p>
+          <span>PDF only · Max 5MB</span>
+        </div>
+        <div class="file-selected" id="file-selected">✅ File selected!</div>
+      </div>
+      <div class="error" id="error"></div>
+      <button class="btn" onclick="startInterview()">🚀 Generate Interview Questions</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>AI is analyzing your resume...<br>Generating personalized questions!</p>
+    </div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="feature"><div class="emoji">🤖</div><h3>AI Questions</h3><p>Personalized based on your resume</p></div>
+  <div class="feature"><div class="emoji">🎤</div><h3>Voice Interview</h3><p>Answer using your microphone</p></div>
+  <div class="feature"><div class="emoji">📊</div><h3>Scorecard</h3><p>Detailed score for each answer</p></div>
+  <div class="feature"><div class="emoji">💡</div><h3>Feedback</h3><p>AI feedback to improve yourself</p></div>
+</div>
+
+<script>
+  function fileSelected(e) {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('file-selected').style.display = 'block';
+      document.getElementById('file-selected').textContent = '✅ ' + file.name;
+    }
+  }
+
+  async function startInterview() {
+    const name = document.getElementById('name').value.trim();
+    const role = document.getElementById('role').value;
+    const resume = document.getElementById('resume').files[0];
+    const err = document.getElementById('error');
+
+    if (!name) { err.textContent = 'Please enter your name.'; err.style.display = 'block'; return; }
+    if (!role) { err.textContent = 'Please select a role.'; err.style.display = 'block'; return; }
+    if (!resume) { err.textContent = 'Please upload your resume.'; err.style.display = 'block'; return; }
+
+    err.style.display = 'none';
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('role', role);
+    formData.append('resume', resume);
+
+    try {
+      const res = await fetch('/api/interview/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      localStorage.setItem('sessionId', data.sessionId);
+      localStorage.setItem('questions', JSON.stringify(data.questions));
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userRole', role);
+      window.location.href = '/interview.html';
+    } catch (e) {
+      document.getElementById('form-section').style.display = 'block';
+      document.getElementById('loading').style.display = 'none';
+      err.textContent = 'Something went wrong! Try again.';
+      err.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>

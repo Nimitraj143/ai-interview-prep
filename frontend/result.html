@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Scorecard — AI Interview Prep</title>
+  <style>
+    :root {
+      --bg: #f0f4f8; --bg2: #ffffff; --bg3: #f8fafc;
+      --text: #111827; --text2: #6b7280; --border: #e5e7eb;
+      --blue: #3B82F6; --blue-light: #EFF6FF; --blue-dark: #1D4ED8;
+      --green: #10B981; --green-light: #D1FAE5;
+      --red: #EF4444; --red-light: #FEE2E2;
+      --yellow: #F59E0B; --yellow-light: #FEF3C7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-size: 16px; font-weight: 700; }
+
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+
+    /* Score Hero */
+    .score-hero { background: linear-gradient(135deg, #1D4ED8, #3B82F6); border-radius: 20px; padding: 2.5rem; text-align: center; color: #fff; margin-bottom: 1.5rem; box-shadow: 0 8px 40px rgba(59,130,246,0.3); }
+    .score-hero h2 { font-size: 1.1rem; opacity: .85; margin-bottom: 1rem; }
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 4px solid rgba(255,255,255,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .score-num { font-size: 2.5rem; font-weight: 800; line-height: 1; }
+    .score-max { font-size: 13px; opacity: .7; }
+    .score-grade { font-size: 1.3rem; font-weight: 700; }
+    .score-label { font-size: 13px; opacity: .8; margin-top: 4px; }
+
+    /* Feedback */
+    .card { background: var(--bg2); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,0.06); margin-bottom: 1.5rem; }
+    .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .feedback-text { font-size: 14px; color: var(--text2); line-height: 1.7; background: var(--bg3); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
+
+    /* Q&A breakdown */
+    .qa-item { border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 12px; background: var(--bg3); }
+    .qa-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .qa-num { font-size: 12px; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+    .qa-type { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+    .q-technical { background: #EDE9FE; color: #5B21B6; }
+    .q-hr { background: #FCE7F3; color: #9D174D; }
+    .score-badge { font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 99px; }
+    .score-high { background: var(--green-light); color: #065F46; }
+    .score-mid { background: var(--yellow-light); color: #92400E; }
+    .score-low { background: var(--red-light); color: #991B1B; }
+    .qa-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; line-height: 1.5; }
+    .qa-answer { font-size: 13px; color: var(--text2); line-height: 1.6; background: var(--bg2); border-radius: 8px; padding: 10px 12px; border: 1px solid var(--border); }
+    .qa-answer-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+
+    /* Score bar */
+    .score-bar-wrap { margin-top: 8px; }
+    .score-bar { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 99px; transition: width .6s; }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { padding: 12px 24px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; display: flex; align-items: center; gap: 7px; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-sec { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-sec:hover { background: var(--border); }
+
+    @media(max-width:600px) {
+      .btn-row { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🎯 AI Interview Prep</h1>
+  <span id="user-info" style="font-size:13px;color:#6b7280;"></span>
+</div>
+
+<div class="container">
+
+  <div class="score-hero">
+    <h2>🎉 Interview Complete!</h2>
+    <div class="score-circle">
+      <div class="score-num" id="total-score">0</div>
+      <div class="score-max">out of 100</div>
+    </div>
+    <div class="score-grade" id="grade">--</div>
+    <div class="score-label" id="grade-label">--</div>
+  </div>
+
+  <div class="card">
+    <h3>💡 AI Feedback</h3>
+    <div class="feedback-text" id="feedback-text">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Question-wise Breakdown</h3>
+    <div id="qa-list"></div>
+  </div>
+
+  <div class="card">
+    <h3>🚀 Next Steps</h3>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="window.location.href='/'">🔄 Try Again</button>
+      <button class="btn btn-sec" onclick="printResult()">🖨️ Print Scorecard</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const result = JSON.parse(localStorage.getItem('result') || '{}');
+  const questions = JSON.parse(localStorage.getItem('questions') || '[]');
+  const answers = JSON.parse(localStorage.getItem('answers') || '[]');
+  const userName = localStorage.getItem('userName') || '';
+  const userRole = localStorage.getItem('userRole') || '';
+
+  document.getElementById('user-info').textContent = `${userName} — ${userRole}`;
+
+  // Total score
+  const total = result.totalScore || 0;
+  document.getElementById('total-score').textContent = total;
+
+  // Grade
+  let grade, label;
+  if (total >= 85) { grade = '🏆 Excellent'; label = 'You are well prepared!'; }
+  else if (total >= 70) { grade = '👍 Good'; label = 'A little more practice needed'; }
+  else if (total >= 50) { grade = '📚 Average'; label = 'Focus on weak areas'; }
+  else { grade = '💪 Keep Practicing'; label = 'Don\'t give up — practice more!'; }
+  document.getElementById('grade').textContent = grade;
+  document.getElementById('grade-label').textContent = label;
+
+  // Feedback
+  document.getElementById('feedback-text').textContent = result.feedback || 'No feedback available.';
+
+  // Q&A breakdown
+  const qaList = document.getElementById('qa-list');
+  questions.forEach((q, i) => {
+    const score = result.scores ? result.scores[i] : 0;
+    const scoreCls = score >= 8 ? 'score-high' : score >= 5 ? 'score-mid' : 'score-low';
+    const barColor = score >= 8 ? '#10B981' : score >= 5 ? '#F59E0B' : '#EF4444';
+    const type = i < 5 ? 'Technical' : 'HR';
+    const typeCls = i < 5 ? 'q-technical' : 'q-hr';
+    qaList.innerHTML += `
+      <div class="qa-item">
+        <div class="qa-header">
+          <div class="qa-num">
+            <span>Q${i+1}</span>
+            <span class="qa-type ${typeCls}">${type}</span>
+          </div>
+          <span class="score-badge ${scoreCls}">${score}/10</span>
+        </div>
+        <div class="qa-question">${q}</div>
+        <div class="score-bar-wrap">
+          <div class="score-bar"><div class="score-bar-fill" style="width:${score*10}%;background:${barColor}"></div></div>
+        </div>
+        <br>
+        <div class="qa-answer-label">Your Answer</div>
+        <div class="qa-answer">${answers[i] || 'No answer provided.'}</div>
+      </div>`;
+  });
+
+  function printResult() { window.print(); }
+</script>
+</body>
+</html>
