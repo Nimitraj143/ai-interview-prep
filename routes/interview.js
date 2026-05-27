@@ -1,3 +1,5 @@
+const path = require('path');
+const mammoth = require('mammoth');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -6,26 +8,36 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 
 const Session = mongoose.model('Session');
-const upload = multer({ dest: 'uploads/' });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage });
 
-async function extractTextFromPDF(filePath) {
-  const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  const data = new Uint8Array(fs.readFileSync(filePath));
-  const doc = await pdfjsLib.getDocument({ data }).promise;
-  let text = '';
-  for (let i = 1; i <= doc.numPages; i++) {
-    const page = await doc.getPage(i);
-    const content = await page.getTextContent();
-    text += content.items.map(item => item.str).join(' ') + '\n';
+const { PDFParse } = require('pdf-parse');
+
+async function extractTextFromFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === '.docx') {
+    const result = await mammoth.extractRawText({ path: filePath });
+    return result.value;
+  } else {
+    const { PdfReader } = require('pdfreader');
+    return new Promise((resolve, reject) => {
+      let text = '';
+      new PdfReader().parseFileItems(filePath, (err, item) => {
+        if (err) reject(err);
+        else if (!item) resolve(text);
+        else if (item.text) text += item.text + ' ';
+      });
+    });
   }
-  return text;
 }
 
 router.post('/upload', upload.single('resume'), async (req, res) => {
   try {
     const { name, role } = req.body;
-    const resumeText = await extractTextFromPDF(req.file.path);
-
+    const resumeText = await extractTextFromFile(req.file.path);
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
