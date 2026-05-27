@@ -8,6 +8,8 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 
 const Session = mongoose.model('Session');
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
@@ -21,16 +23,13 @@ async function extractTextFromFile(filePath) {
   if (ext === '.docx') {
     const result = await mammoth.extractRawText({ path: filePath });
     return result.value;
+  } else if (ext === '.pdf') {
+    const pdfParse = require('pdf-parse');
+    const dataBuffer = fs.readFileSync(filePath);
+    const data = await pdfParse(dataBuffer);
+    return data.text;
   } else {
-    const { PdfReader } = require('pdfreader');
-    return new Promise((resolve, reject) => {
-      let text = '';
-      new PdfReader().parseFileItems(filePath, (err, item) => {
-        if (err) reject(err);
-        else if (!item) resolve(text);
-        else if (item.text) text += item.text + ' ';
-      });
-    });
+    throw new Error('Unsupported file type');
   }
 }
 
