@@ -24,7 +24,7 @@ async function extractTextFromFile(filePath) {
     const result = await mammoth.extractRawText({ path: filePath });
     return result.value;
   } else if (ext === '.pdf') {
-    const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+    const pdfParse = require('pdf-parse/lib/pdf-parse.js');g
     const dataBuffer = fs.readFileSync(filePath);
     const data = await pdfParse(dataBuffer);
     return data.text;
