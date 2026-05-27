@@ -16,7 +16,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
 // MongoDB connect
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected!'))
   .catch(err => console.log('MongoDB error:', err));
 
