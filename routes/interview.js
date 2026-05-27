@@ -6,8 +6,10 @@ const multer = require('multer');
 const axios = require('axios');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const pdfParse = require('pdf-parse');
 
 const Session = mongoose.model('Session');
+
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
 const storage = multer.diskStorage({
@@ -16,15 +18,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-const { PDFParse } = require('pdf-parse');
-
 async function extractTextFromFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === '.docx') {
     const result = await mammoth.extractRawText({ path: filePath });
     return result.value;
   } else if (ext === '.pdf') {
-    const pdfParse = require('pdf-parse');
     const dataBuffer = fs.readFileSync(filePath);
     const data = await pdfParse(dataBuffer);
     return data.text;
