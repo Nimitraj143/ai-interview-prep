@@ -1,161 +1,1094 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Interview Prep</title>
+  <title>ServeMore — Share Food, Spread Joy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
   <style>
     :root {
-      --bg: #f0f4f8; --bg2: #ffffff; --bg3: #f8fafc;
-      --text: #111827; --text2: #6b7280; --border: #e5e7eb;
-      --blue: #3B82F6; --blue-light: #EFF6FF; --blue-dark: #1D4ED8;
+      --saffron: #FF6B2C;
+      --turmeric: #F5A623;
+      --mint: #00C896;
+      --deep: #1A0A00;
+      --cream: #FFF8F0;
+      --card-bg: rgba(255,255,255,0.85);
+      --glass: rgba(255,255,255,0.15);
+      --shadow: 0 20px 60px rgba(255,107,44,0.15);
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    .hero { background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 50%, #60A5FA 100%); padding: 4rem 2rem; text-align: center; }
-    .hero h1 { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
-    .hero h1 span { color: #BAE6FD; }
-    .hero p { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 2rem; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0f0500;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--deep);
+    }
 
-    .container { max-width: 600px; margin: -3rem auto 3rem; padding: 0 1rem; position: relative; z-index: 2; }
-    .card { background: var(--bg2); border-radius: 20px; padding: 2rem; box-shadow: 0 8px 40px rgba(0,0,0,0.12); border: 1px solid var(--border); }
-    .card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .card p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
+    /* === ANIMATED BACKGROUND === */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse at 20% 20%, #ff6b2c55 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, #f5a62340 0%, transparent 60%),
+                  radial-gradient(ellipse at 50% 50%, #00c89615 0%, transparent 70%),
+                  linear-gradient(135deg, #1a0a00 0%, #2d1200 50%, #1a0a00 100%);
+      animation: bgShift 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(15deg); }
+    }
+
+    .bg-blobs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      animation: blobFloat 12s ease-in-out infinite alternate;
+    }
+
+    .blob-1 { width: 500px; height: 500px; background: #FF6B2C; top: -150px; left: -100px; animation-delay: 0s; }
+    .blob-2 { width: 400px; height: 400px; background: #F5A623; bottom: -100px; right: -80px; animation-delay: -4s; }
+    .blob-3 { width: 300px; height: 300px; background: #00C896; top: 40%; left: 40%; animation-delay: -8s; }
+
+    @keyframes blobFloat {
+      0% { transform: translate(0,0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    /* === LAYOUT === */
+    .page { position: relative; z-index: 1; }
+
+    /* === HERO TOPBAR === */
+    .hero {
+      padding: 28px 32px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 32px rgba(255,107,44,0.5);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 8px 32px rgba(255,107,44,0.5); }
+      50% { box-shadow: 0 8px 48px rgba(255,107,44,0.8); }
+    }
+
+    .brand-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-text p { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .stat-chip {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      padding: 8px 18px;
+      text-align: center;
+    }
+
+    .stat-chip .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--turmeric);
+      line-height: 1;
+    }
+
+    .stat-chip .lbl {
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* === HERO BANNER === */
+    .hero-banner {
+      margin: 28px 32px 0;
+      background: linear-gradient(120deg, rgba(255,107,44,0.25) 0%, rgba(245,166,35,0.15) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,107,44,0.3);
+      border-radius: 24px;
+      padding: 32px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-banner::before {
+      content: '🍲';
+      position: absolute;
+      right: -20px; top: -20px;
+      font-size: 140px;
+      opacity: 0.08;
+      transform: rotate(-15deg);
+    }
+
+    .hero-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: #fff;
+      line-height: 1.3;
+      max-width: 340px;
+    }
+
+    .hero-banner h2 span { color: var(--turmeric); }
+
+    .hero-banner p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 8px; max-width: 320px; line-height: 1.6; }
+
+    .hero-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 24px rgba(255,107,44,0.4);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,107,44,0.6); }
+
+    .btn-ghost {
+      padding: 12px 24px;
+      background: var(--glass);
+      color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+
+    /* === NAV TABS === */
+    .nav-wrapper {
+      margin: 24px 32px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      padding: 5px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      padding: 9px 22px;
+      border-radius: 50px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255,107,44,0.4);
+    }
+
+    .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.8); }
+
+    /* === CONTENT AREA === */
+    .content {
+      padding: 24px 32px 60px;
+    }
+
+    .sec { display: none; }
+    .sec.on { display: block; }
+
+    /* === BROWSE SECTION === */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.35); }
+    .search-wrap input:focus { outline: none; border-color: var(--saffron); background: rgba(255,255,255,0.12); }
+
+    .filter-chip {
+      padding: 9px 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.on {
+      background: linear-gradient(135deg, rgba(255,107,44,0.3), rgba(245,166,35,0.2));
+      border-color: var(--saffron);
+      color: var(--turmeric);
+      font-weight: 600;
+    }
+
+    .filter-chip:hover:not(.on) { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.25); }
+
+    /* === FOOD GRID === */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s;
+      animation: cardIn 0.4s ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255,107,44,0.4);
+      box-shadow: 0 24px 60px rgba(255,107,44,0.2);
+    }
+
+    .card-top {
+      padding: 18px 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ev-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ev-family { background: rgba(56,130,221,0.2); color: #74B3F5; border: 1px solid rgba(56,130,221,0.3); }
+    .ev-office { background: rgba(245,166,35,0.2); color: #F5C842; border: 1px solid rgba(245,166,35,0.3); }
+    .ev-party { background: rgba(212,83,126,0.2); color: #F07BAF; border: 1px solid rgba(212,83,126,0.3); }
+    .ev-other { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); }
+
+    .urgency-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+
+    .urg-ok { background: rgba(0,200,150,0.15); color: #00C896; border: 1px solid rgba(0,200,150,0.3); }
+    .urg-soon { background: rgba(245,166,35,0.15); color: var(--turmeric); border: 1px solid rgba(245,166,35,0.3); }
+    .urg-today { background: rgba(255,80,80,0.15); color: #FF6B6B; border: 1px solid rgba(255,80,80,0.3); }
+
+    .card-body { padding: 14px 18px; }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .info-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .pill i { font-size: 12px; }
+
+    .qty-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+    }
+
+    .qty-row strong { color: #fff; }
+
+    .track {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--mint), #00e6ab);
+      transition: width 0.6s ease;
+    }
+
+    .fill.mid { background: linear-gradient(90deg, var(--turmeric), #ffc04a); }
+    .fill.high { background: linear-gradient(90deg, #FF6B6B, #ff9292); }
+
+    .card-footer {
+      padding: 0 18px 18px;
+    }
+
+    .grab-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 6px 20px rgba(255,107,44,0.35);
+      transition: all 0.2s;
+    }
+
+    .grab-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,44,0.55); }
+
+    .grab-btn:disabled {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.25);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .host-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .host-row i { font-size: 13px; }
+
+    /* === EMPTY STATE === */
+    .empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 5rem 2rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+    }
+
+    /* === SHARE FORM === */
+    .form-wrapper {
+      max-width: 620px;
+    }
+
+    .form-header {
+      margin-bottom: 24px;
+    }
+
+    .form-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .form-header h2 span { color: var(--turmeric); }
+    .form-header p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+    .form-card {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 28px;
+    }
+
+    .toast {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,200,150,0.15);
+      border: 1px solid rgba(0,200,150,0.4);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--mint);
+      margin-bottom: 20px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 10px;
+    }
+
+    .ev-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .ev-opt {
+      padding: 14px 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      transition: all 0.2s;
+    }
+
+    .ev-opt i { display: block; font-size: 24px; margin-bottom: 5px; }
+
+    .ev-opt:hover { border-color: rgba(255,107,44,0.4); color: rgba(255,255,255,0.8); }
+
+    .ev-opt.sel {
+      background: linear-gradient(135deg, rgba(255,107,44,0.25), rgba(245,166,35,0.15));
+      border-color: var(--saffron);
+      color: var(--turmeric);
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(255,107,44,0.2);
+    }
 
     .frow { margin-bottom: 16px; }
-    .frow label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-    .frow input, .frow select { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); font-size: 14px; font-family: inherit; color: var(--text); }
-    .frow input:focus, .frow select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 
-    .upload-box { border: 2px dashed var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; background: var(--bg3); position: relative; transition: all .2s; }
-    .upload-box:hover { border-color: var(--blue); background: var(--blue-light); }
-    .upload-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .upload-box .icon { font-size: 2.5rem; margin-bottom: 8px; }
-    .upload-box p { font-size: 13px; color: var(--text2); }
-    .upload-box span { font-size: 11px; color: var(--text2); opacity: .7; }
-    .file-selected { font-size: 13px; color: var(--blue); margin-top: 8px; font-weight: 500; display: none; }
+    .frow label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 7px;
+    }
 
-    .btn { width: 100%; padding: 13px; border-radius: 10px; border: none; background: var(--blue); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; margin-top: 8px; }
-    .btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
-    .btn:disabled { background: var(--border); color: var(--text2); cursor: not-allowed; transform: none; }
+    .frow input,
+    .frow select,
+    .frow textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: #fff;
+      transition: all 0.2s;
+    }
 
-    .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 2rem auto; max-width: 600px; padding: 0 1rem; }
-    .feature { background: var(--bg2); border-radius: 14px; padding: 1.2rem; border: 1px solid var(--border); text-align: center; }
-    .feature .emoji { font-size: 2rem; margin-bottom: 8px; }
-    .feature h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .feature p { font-size: 12px; color: var(--text2); }
+    .frow input::placeholder,
+    .frow textarea::placeholder { color: rgba(255,255,255,0.25); }
 
-    .loading { display: none; text-align: center; padding: 2rem; }
-    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading p { color: var(--text2); font-size: 14px; }
+    .frow input:focus,
+    .frow select:focus,
+    .frow textarea:focus {
+      outline: none;
+      border-color: var(--saffron);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 3px rgba(255,107,44,0.15);
+    }
 
-    .error { background: #FEE2E2; color: #991B1B; border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; }
+    .frow select option { background: #2d1200; color: #fff; }
+    .frow textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    .frow-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .form-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 20px 0;
+    }
+
+    /* === MODAL === */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 1rem;
+    }
+
+    .modal-bg.open { display: flex; }
+
+    .modal {
+      background: #1a0a00;
+      border: 1px solid rgba(255,107,44,0.3);
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,44,0.1);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.85) translateY(30px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(255,107,44,0.4);
+    }
+
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .modal-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 18px; line-height: 1.6; }
+
+    .modal-info {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .modal-info strong { color: #fff; }
+
+    .modal input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: #fff;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+
+    .modal input::placeholder { color: rgba(255,255,255,0.25); }
+
+    .modal input:focus {
+      outline: none;
+      border-color: var(--saffron);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 3px rgba(255,107,44,0.15);
+    }
+
+    .merr {
+      font-size: 12px;
+      color: #FF6B6B;
+      margin-bottom: 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover { background: rgba(255,255,255,0.12); }
+
+    /* === SCROLLBAR === */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,44,0.3); border-radius: 99px; }
+
   </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1>🎯 AI Interview <span>Prep</span></h1>
-  <p>Upload your resume — AI will generate personalized interview questions just for you!</p>
+<div class="bg-canvas"></div>
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
 </div>
 
-<div class="container">
-  <div class="card">
-    <h2>Start Your Mock Interview</h2>
-    <p>Fill in your details and upload your resume to begin</p>
+<div class="page">
 
-    <div id="form-section">
-      <div class="frow">
-        <label>Your Name *</label>
-        <input type="text" id="name" placeholder="e.g. Nimit Rajput">
+  <!-- TOPBAR -->
+  <div class="hero">
+    <div class="brand">
+      <div class="brand-logo">🍛</div>
+      <div class="brand-text">
+        <h1>ServeMore</h1>
+        <p>Share food • Reduce waste • Spread joy</p>
       </div>
-      <div class="frow">
-        <label>Target Role *</label>
-        <select id="role">
-          <option value="">Select a role...</option>
-          <option value="Frontend Developer">Frontend Developer</option>
-          <option value="Backend Developer">Backend Developer</option>
-          <option value="Full Stack Developer">Full Stack Developer</option>
-          <option value="React Developer">React Developer</option>
-          <option value="Node.js Developer">Node.js Developer</option>
-          <option value="Software Engineer">Software Engineer</option>
-          <option value="Web Developer">Web Developer</option>
-        </select>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-chip">
+        <div class="num" id="s-available">0</div>
+        <div class="lbl">Live Offers</div>
       </div>
-      <div class="frow">
-        <label>Upload Resume (PDF) *</label>
-        <div class="upload-box" id="upload-box">
-          <input type="file" id="resume" accept=".pdf" onchange="fileSelected(event)">
-          <div class="icon">📄</div>
-          <p>Click to upload your resume</p>
-          <span>PDF only · Max 5MB</span>
+      <div class="stat-chip">
+        <div class="num" id="s-meals">0</div>
+        <div class="lbl">Meals Shared</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO BANNER -->
+  <div class="hero-banner">
+    <div>
+      <h2>Good food deserves a<br><span>second life.</span></h2>
+      <p>List your leftover event food in 30 seconds. Families, students & neighbours find it in minutes.</p>
+    </div>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="goTab('share')">
+        <i class="ti ti-plus"></i> Share Food
+      </button>
+      <button class="btn-ghost" onclick="goTab('browse')">
+        <i class="ti ti-bowl-spoon"></i> Find Nearby
+      </button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-wrapper">
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="goTab('browse')">
+        <i class="ti ti-bowl-spoon"></i> Find Food
+      </button>
+      <button class="tab-btn" onclick="goTab('share')">
+        <i class="ti ti-plus"></i> Share Food
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- BROWSE -->
+    <div class="sec on" id="sec-browse">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" id="q" placeholder="Search food, area..." oninput="render()">
         </div>
-        <div class="file-selected" id="file-selected">✅ File selected!</div>
+        <button class="filter-chip on" onclick="setF(this,'all')">All</button>
+        <button class="filter-chip" onclick="setF(this,'family')">🏠 Family</button>
+        <button class="filter-chip" onclick="setF(this,'office')">🏢 Office</button>
+        <button class="filter-chip" onclick="setF(this,'party')">🎉 Party</button>
       </div>
-      <div class="error" id="error"></div>
-      <button class="btn" onclick="startInterview()">🚀 Generate Interview Questions</button>
+      <div class="grid" id="grid"></div>
     </div>
 
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <p>AI is analyzing your resume...<br>Generating personalized questions!</p>
+    <!-- SHARE FORM -->
+    <div class="sec" id="sec-share">
+      <div class="form-wrapper">
+        <div class="form-header">
+          <h2>Share your <span>extra food</span></h2>
+          <p>Had a party or event? Don't let good food go to waste. List it free — someone nearby will love it.</p>
+        </div>
+        <div class="form-card">
+          <div class="toast" id="toast"><i class="ti ti-circle-check"></i> Food listed! People nearby can see it now.</div>
+
+          <div class="section-label">What kind of event?</div>
+          <div class="ev-grid">
+            <button class="ev-opt sel" onclick="pickEv(this,'family')"><i class="ti ti-home-heart"></i>Family</button>
+            <button class="ev-opt" onclick="pickEv(this,'office')"><i class="ti ti-building"></i>Office</button>
+            <button class="ev-opt" onclick="pickEv(this,'party')"><i class="ti ti-confetti"></i>Party</button>
+            <button class="ev-opt" onclick="pickEv(this,'other')"><i class="ti ti-dots"></i>Other</button>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <div class="frow"><label>Food name *</label><input type="text" id="f-name" placeholder="e.g. Biryani, Chole, Cake..."></div>
+          <div class="frow"><label>Description</label><textarea id="f-desc" placeholder="Ingredients, freshness, allergens to note..."></textarea></div>
+
+          <div class="frow-2">
+            <div class="frow" style="margin:0"><label>Servings *</label><input type="number" id="f-qty" min="1" placeholder="How many people?"></div>
+            <div class="frow" style="margin:0"><label>Food type</label>
+              <select id="f-cat">
+                <option value="veg">🥦 Vegetarian</option>
+                <option value="nonveg">🍗 Non-Veg</option>
+                <option value="mixed">🍱 Mixed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <div class="frow"><label>Pickup location *</label><input type="text" id="f-loc" placeholder="e.g. Sector 14, near park gate"></div>
+          <div class="frow-2">
+            <div class="frow" style="margin:0"><label>Available until *</label><input type="datetime-local" id="f-exp"></div>
+            <div class="frow" style="margin:0"><label>Your name *</label><input type="text" id="f-host" placeholder="Your name"></div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <div class="frow"><label>Contact (WhatsApp/phone)</label><input type="text" id="f-contact" placeholder="So people can reach you"></div>
+          <div class="frow"><label>Special instructions</label><input type="text" id="f-note" placeholder="e.g. Bring container, call before coming..."></div>
+
+          <button class="btn-primary" style="width:100%;justify-content:center;border-radius:14px;padding:14px;" onclick="submitFood()">
+            <i class="ti ti-send"></i> Share food now
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- GRAB MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-icon">🤲</div>
+    <h3 id="m-title">Claim your serving</h3>
+    <p class="modal-sub" id="m-sub"></p>
+    <div class="modal-info" id="m-info"></div>
+    <input type="text" id="m-name" placeholder="Your name *">
+    <input type="number" id="m-qty" min="1" placeholder="Servings needed *">
+    <div class="merr" id="merr"><i class="ti ti-alert-circle"></i> <span id="merr-txt"></span></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeM()">Cancel</button>
+      <button class="btn-primary" onclick="doGrab()" style="border-radius:12px;">
+        <i class="ti ti-check"></i> Confirm grab
+      </button>
     </div>
   </div>
 </div>
 
-<div class="features">
-  <div class="feature"><div class="emoji">🤖</div><h3>AI Questions</h3><p>Personalized based on your resume</p></div>
-  <div class="feature"><div class="emoji">🎤</div><h3>Voice Interview</h3><p>Answer using your microphone</p></div>
-  <div class="feature"><div class="emoji">📊</div><h3>Scorecard</h3><p>Detailed score for each answer</p></div>
-  <div class="feature"><div class="emoji">💡</div><h3>Feedback</h3><p>AI feedback to improve yourself</p></div>
-</div>
-
 <script>
-  function fileSelected(e) {
-    const file = e.target.files[0];
-    if (file) {
-      document.getElementById('file-selected').style.display = 'block';
-      document.getElementById('file-selected').textContent = '✅ ' + file.name;
-    }
-  }
+  let foods = [], filter = 'all', grabId = null, selectedEv = 'family';
 
-  async function startInterview() {
-    const name = document.getElementById('name').value.trim();
-    const role = document.getElementById('role').value;
-    const resume = document.getElementById('resume').files[0];
-    const err = document.getElementById('error');
+  const accentMap = { family:'#378ADD', office:'#EF9F27', party:'#D4537E', other:'#888' };
+  const evLabel = { family:'Family', office:'Office', party:'Party', other:'Other' };
+  const evCls = { family:'ev-family', office:'ev-office', party:'ev-party', other:'ev-other' };
+  const evEmoji = { family:'🏠', office:'🏢', party:'🎉', other:'✨' };
+  const catEmoji = { veg:'🥦', nonveg:'🍗', mixed:'🍱' };
+  const catLabel = { veg:'Vegetarian', nonveg:'Non-Veg', mixed:'Mixed' };
 
-    if (!name) { err.textContent = 'Please enter your name.'; err.style.display = 'block'; return; }
-    if (!role) { err.textContent = 'Please select a role.'; err.style.display = 'block'; return; }
-    if (!resume) { err.textContent = 'Please upload your resume.'; err.style.display = 'block'; return; }
-
-    err.style.display = 'none';
-    document.getElementById('form-section').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
-
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('role', role);
-    formData.append('resume', resume);
-
+  async function loadFoods() {
     try {
-      const res = await fetch('/api/interview/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      localStorage.setItem('sessionId', data.sessionId);
-      localStorage.setItem('questions', JSON.stringify(data.questions));
-      localStorage.setItem('userName', name);
-      localStorage.setItem('userRole', role);
-      window.location.href = '/interview.html';
-    } catch (e) {
-      document.getElementById('form-section').style.display = 'block';
-      document.getElementById('loading').style.display = 'none';
-      err.textContent = 'Something went wrong! Try again.';
-      err.style.display = 'block';
-    }
+      const res = await fetch('/api/foods');
+      foods = await res.json();
+      render(); updateStats();
+    } catch(e) { console.error(e); }
   }
+
+  function goTab(t) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['browse','share'][i] === t));
+    document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+    document.getElementById('sec-' + t).classList.add('on');
+  }
+
+  function setF(el, f) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on'); filter = f; render();
+  }
+
+  function urgency(f) {
+    if (f.grabbed >= f.qty) return null;
+    const ms = new Date(f.exp) - new Date();
+    if (ms < 3600000) return { label:'Expires soon!', cls:'urg-today' };
+    if (ms < 7200000) return { label:'~1 hr left', cls:'urg-soon' };
+    return { label:'Available', cls:'urg-ok' };
+  }
+
+  function render() {
+    const q = (document.getElementById('q').value || '').toLowerCase();
+    const g = document.getElementById('grid');
+    let list = foods.filter(f => {
+      if (filter !== 'all' && filter !== f.ev) return false;
+      return !q || (f.name||'').toLowerCase().includes(q) || (f.loc||'').toLowerCase().includes(q);
+    });
+
+    if (!list.length) {
+      g.innerHTML = `<div class="empty">
+        <span class="empty-icon">🍽️</span>
+        <h3>No food listed yet</h3>
+        <p>Be the first to share from your event!</p>
+      </div>`;
+      return;
+    }
+
+    g.innerHTML = list.map((f, idx) => {
+      const left = f.qty - f.grabbed;
+      const pct = Math.round((f.grabbed / f.qty) * 100);
+      const fc = pct > 80 ? 'high' : pct > 50 ? 'mid' : '';
+      const u = urgency(f);
+      const expStr = f.exp ? new Date(f.exp).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : '—';
+      return `<div class="card" style="animation-delay:${idx * 0.06}s">
+        <div class="card-top">
+          <span class="ev-badge ${evCls[f.ev]||'ev-other'}">${evEmoji[f.ev]||'✨'} ${evLabel[f.ev]||'Other'}</span>
+          ${u ? `<span class="urgency-tag ${u.cls}">${u.label}</span>` : ''}
+        </div>
+        <div class="card-body">
+          <div class="card-title">${f.name}</div>
+          <div class="card-desc">${f.desc || 'Fresh from the event. Come grab it!'}</div>
+          <div class="info-pills">
+            <span class="pill"><i class="ti ti-map-pin"></i>${f.loc||'Location TBD'}</span>
+            <span class="pill"><i class="ti ti-clock"></i>${expStr}</span>
+            <span class="pill">${catEmoji[f.cat]||'🍽️'} ${catLabel[f.cat]||'Food'}</span>
+            ${f.note ? `<span class="pill"><i class="ti ti-info-circle"></i>${f.note}</span>` : ''}
+          </div>
+          <div class="qty-row">
+            <span>Servings claimed</span>
+            <span><strong>${f.grabbed}</strong> / ${f.qty}</span>
+          </div>
+          <div class="track"><div class="fill ${fc}" style="width:${pct}%"></div></div>
+        </div>
+        <div class="card-footer">
+          <button class="grab-btn" onclick="openM('${f._id}')" ${!left ? 'disabled' : ''}>
+            ${left ? `<i class="ti ti-hand-grab"></i> Grab — ${left} serving${left>1?'s':''} left` : '✓ All claimed'}
+          </button>
+          <div class="host-row">
+            <i class="ti ti-user-circle"></i> Shared by ${f.host}
+            ${f.contact ? ` · <i class="ti ti-phone"></i> ${f.contact}` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function updateStats() {
+    document.getElementById('s-available').textContent = foods.filter(f => f.grabbed < f.qty).length;
+    document.getElementById('s-meals').textContent = foods.reduce((a, f) => a + f.grabbed, 0);
+  }
+
+  function openM(id) {
+    grabId = id;
+    const f = foods.find(x => x._id === id);
+    const left = f.qty - f.grabbed;
+    document.getElementById('m-title').textContent = f.name;
+    document.getElementById('m-sub').textContent = `By ${f.host}${f.contact ? ' · ' + f.contact : ''} — ${left} serving${left>1?'s':''} left`;
+    document.getElementById('m-info').innerHTML = `<strong>${f.name}</strong> · ${f.loc}<br>${f.note || 'No special instructions.'}`;
+    document.getElementById('m-qty').max = left;
+    document.getElementById('m-name').value = '';
+    document.getElementById('m-qty').value = '';
+    document.getElementById('merr').style.display = 'none';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeM() { document.getElementById('modal').classList.remove('open'); }
+
+  async function doGrab() {
+    const name = document.getElementById('m-name').value.trim();
+    const qty = parseInt(document.getElementById('m-qty').value);
+    const err = document.getElementById('merr');
+    const errTxt = document.getElementById('merr-txt');
+    if (!name) { errTxt.textContent = 'Please enter your name.'; err.style.display = 'flex'; return; }
+    if (!qty || qty < 1) { errTxt.textContent = 'How many servings do you need?'; err.style.display = 'flex'; return; }
+    const res = await fetch(`/api/foods/${grabId}/grab`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, qty })
+    });
+    if (res.ok) { closeM(); loadFoods(); }
+    else { const d = await res.json(); errTxt.textContent = d.error; err.style.display = 'flex'; }
+  }
+
+  function pickEv(el, ev) {
+    document.querySelectorAll('.ev-opt').forEach(b => b.classList.remove('sel'));
+    el.classList.add('sel'); selectedEv = ev;
+  }
+
+  async function submitFood() {
+    const name = document.getElementById('f-name').value.trim();
+    const qty = parseInt(document.getElementById('f-qty').value);
+    const loc = document.getElementById('f-loc').value.trim();
+    const host = document.getElementById('f-host').value.trim();
+    const exp = document.getElementById('f-exp').value;
+    if (!name || !qty || !loc || !host || !exp) { alert('Please fill all required fields (*).'); return; }
+    await fetch('/api/foods', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ev: selectedEv, name, desc: document.getElementById('f-desc').value.trim(),
+        cat: document.getElementById('f-cat').value, qty, loc, host, exp,
+        contact: document.getElementById('f-contact').value.trim(),
+        note: document.getElementById('f-note').value.trim()
+      })
+    });
+    ['f-name','f-desc','f-qty','f-loc','f-host','f-contact','f-note','f-exp'].forEach(id => document.getElementById(id).value = '');
+    const t = document.getElementById('toast');
+    t.style.display = 'flex';
+    setTimeout(() => t.style.display = 'none', 3500);
+    goTab('browse');
+    loadFoods();
+  }
+
+  loadFoods();
 </script>
 </body>
 </html>

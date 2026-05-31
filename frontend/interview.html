@@ -1,203 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mock Interview — AI Interview Prep</title>
-  <style>
-    :root {
-      --bg: #f0f4f8; --bg2: #ffffff; --bg3: #f8fafc;
-      --text: #111827; --text2: #6b7280; --border: #e5e7eb;
-      --blue: #3B82F6; --blue-light: #EFF6FF; --blue-dark: #1D4ED8;
-      --green: #10B981; --red: #EF4444;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Interview — AI Interview Prep</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F0F4F3;
+  --surface: #ffffff;
+  --teal: #0D9488;
+  --teal-light: #CCFBF1;
+  --teal-dark: #0F766E;
+  --border: #D6D3D1;
+  --muted: #A8A29E;
+  --text: #44403C;
+  --input-bg: #DBEAFE;
+  --input-border: #93C5FD;
+  --label: #3B82F6;
+}
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); min-height: 100vh; padding: 20px; }
+.container { max-width: 600px; margin: 0 auto; }
 
-    .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .topbar h1 { font-size: 16px; font-weight: 700; }
-    .progress-text { font-size: 13px; color: var(--text2); }
+.header { background: var(--surface); border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border: 0.5px solid var(--border); }
+.logo { font-size: 16px; font-weight: 700; color: var(--teal); }
+.meta { font-size: 12px; color: var(--muted); }
 
-    .progress-bar { height: 4px; background: var(--border); }
-    .progress-fill { height: 100%; background: var(--blue); transition: width .4s; }
+.progress-wrap { margin-bottom: 14px; }
+.progress-info { display: flex; justify-content: space-between; font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 8px; }
+.progress-bar { background: var(--border); border-radius: 10px; height: 7px; overflow: hidden; }
+.progress-fill { background: var(--teal); height: 100%; border-radius: 10px; transition: width 0.4s ease; }
 
-    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+.dots { display: flex; gap: 7px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+.dot { width: 11px; height: 11px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+.dot.done { background: var(--teal); }
+.dot.curr { background: var(--teal-dark); outline: 3px solid var(--teal-light); }
+.dot.skipped { background: var(--muted); }
 
-    .question-card { background: var(--bg2); border-radius: 20px; padding: 2rem; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
-    .q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
-    .q-num { width: 36px; height: 36px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .q-type { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 600; }
-    .q-technical { background: #EDE9FE; color: #5B21B6; }
-    .q-hr { background: #FCE7F3; color: #9D174D; }
-    .question-text { font-size: 17px; font-weight: 600; line-height: 1.6; color: var(--text); }
+.q-card { background: var(--surface); border-radius: 14px; padding: 20px; margin-bottom: 16px; border: 0.5px solid var(--border); }
+.q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.q-badge { background: var(--teal-light); color: var(--teal-dark); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+.timer { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text); font-weight: 700; }
+.timer-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.timer.warning { color: #DC2626; }
+.timer.warning .timer-dot { background: #DC2626; }
 
-    .answer-section { background: var(--bg2); border-radius: 20px; padding: 2rem; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-    .answer-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+.q-text { font-size: 15px; color: var(--text); font-weight: 500; line-height: 1.6; margin-bottom: 16px; }
 
-    .voice-section { text-align: center; margin-bottom: 1.5rem; }
-    .mic-btn { width: 80px; height: 80px; border-radius: 50%; border: none; background: var(--blue); color: #fff; font-size: 2rem; cursor: pointer; transition: all .2s; box-shadow: 0 4px 20px rgba(59,130,246,0.4); }
-    .mic-btn:hover { transform: scale(1.05); }
-    .mic-btn.recording { background: var(--red); animation: micPulse 1s infinite; box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
-    @keyframes micPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-    .mic-status { font-size: 13px; color: var(--text2); margin-top: 10px; }
-    .mic-status.active { color: var(--red); font-weight: 600; }
+.answer-label { font-size: 11px; color: var(--label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+.answer-box {
+  width: 100%; border: 1.5px solid var(--input-border);
+  border-radius: 10px; padding: 12px;
+  font-size: 14px; color: #1C1917;
+  min-height: 120px; background: var(--input-bg);
+  resize: vertical; font-family: inherit; outline: none;
+  transition: border-color 0.2s;
+}
+.answer-box:focus { border-color: var(--teal); }
+.answer-box::placeholder { color: #93C5FD; }
 
-    .divider { display: flex; align-items: center; gap: 12px; margin: 1rem 0; color: var(--text2); font-size: 12px; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.answer-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); }
 
-    textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); font-size: 14px; font-family: inherit; color: var(--text); resize: vertical; min-height: 120px; line-height: 1.6; }
-    textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.btn-row { display: flex; gap: 10px; }
+.btn-skip { flex: 1; padding: 12px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--muted); font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-skip:hover { border-color: var(--muted); }
+.btn-next { flex: 2; padding: 12px; background: var(--teal); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.btn-next:hover { background: var(--teal-dark); }
 
-    .btn-row { display: flex; gap: 10px; margin-top: 1rem; }
-    .btn { padding: 12px 24px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; display: flex; align-items: center; gap: 7px; }
-    .btn-primary { background: var(--blue); color: #fff; flex: 1; justify-content: center; }
-    .btn-primary:hover { background: var(--blue-dark); }
-    .btn-skip { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
-    .btn-skip:hover { background: var(--border); }
-
-    .tip { background: var(--blue-light); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--blue-dark); margin-bottom: 1.5rem; }
-
-    .loading { display: none; text-align: center; padding: 3rem; }
-    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+.scoring-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+.scoring-overlay.show { display: flex; }
+.scoring-box { background: var(--surface); border-radius: 16px; padding: 32px; text-align: center; max-width: 300px; width: 90%; }
+.scoring-box h3 { font-size: 18px; color: var(--text); font-weight: 700; margin-bottom: 8px; }
+.scoring-box p { font-size: 13px; color: var(--muted); }
+.spinner { width: 40px; height: 40px; border: 4px solid var(--teal-light); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 16px auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </head>
 <body>
-
-<div class="topbar">
-  <h1>🎯 Mock Interview</h1>
-  <span class="progress-text" id="progress-text">Question 1 of 10</span>
-</div>
-<div class="progress-bar">
-  <div class="progress-fill" id="progress-fill" style="width:10%"></div>
-</div>
-
 <div class="container">
-  <div class="tip" id="tip">💡 <strong>Tip:</strong> Click the mic button to answer by voice, or type your answer below.</div>
-
-  <div class="question-card">
-    <div class="q-header">
-      <div class="q-num" id="q-num">1</div>
-      <span class="q-type" id="q-type">Technical</span>
-    </div>
-    <div class="question-text" id="question-text">Loading question...</div>
+  <div class="header">
+    <div class="logo">🤖 AI Interview Prep</div>
+    <span class="meta" id="metaInfo">Loading...</span>
   </div>
 
-  <div class="answer-section" id="answer-section">
-    <h3>Your Answer</h3>
-    <div class="voice-section">
-      <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
-      <div class="mic-status" id="mic-status">Click mic to start speaking</div>
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="qLabel">Question 1</span>
+      <span id="qCounter">1 / 10</span>
     </div>
-    <div class="divider">or type below</div>
-    <textarea id="answer" placeholder="Type your answer here..."></textarea>
-    <div class="btn-row">
-      <button class="btn btn-skip" onclick="skipQuestion()">Skip</button>
-      <button class="btn btn-primary" onclick="nextQuestion()">
-        <span id="btn-text">Next Question →</span>
-      </button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+  </div>
+
+  <div class="dots" id="dotsContainer"></div>
+
+  <div class="q-card">
+    <div class="q-meta">
+      <span class="q-badge" id="qBadge">Technical</span>
+      <span class="timer" id="timerEl"><span class="timer-dot"></span> <span id="timerText">2:00</span></span>
+    </div>
+    <p class="q-text" id="qText">Loading question...</p>
+    <div class="answer-label">Your Answer</div>
+    <textarea class="answer-box" id="answerBox" placeholder="Apna jawab yahan type karo..."></textarea>
+    <div class="answer-footer">
+      <span>💡 Examples aur real scenarios zaroor do</span>
+      <span id="wordCount">0 words</span>
     </div>
   </div>
 
-  <div class="loading" id="loading">
+  <div class="btn-row">
+    <button class="btn-skip" onclick="skipQuestion()">Skip ⏭</button>
+    <button class="btn-next" onclick="nextQuestion()">Next Question →</button>
+  </div>
+</div>
+
+<div class="scoring-overlay" id="scoringOverlay">
+  <div class="scoring-box">
+    <h3>Scoring your answer...</h3>
     <div class="spinner"></div>
-    <p>AI is evaluating your answers...<br>Generating your scorecard!</p>
+    <p>AI evaluate kar raha hai</p>
   </div>
 </div>
 
 <script>
-  const questions = JSON.parse(localStorage.getItem('questions') || '[]');
-  const sessionId = localStorage.getItem('sessionId');
-  let currentQ = 0;
-  let answers = new Array(questions.length).fill('');
-  let recognition = null;
-  let isRecording = false;
+const config = JSON.parse(localStorage.getItem('interviewConfig') || '{"name":"Candidate","role":"Developer","diff":"Medium","qCount":"10","exp":"Fresher"}');
+const QUESTIONS = [
+  { text: "Tell me about yourself and your background.", type: "Behavioral" },
+  { text: "What is the difference between let, const, and var in JavaScript?", type: "Technical" },
+  { text: "Explain the concept of closures in JavaScript with an example.", type: "Technical" },
+  { text: "What is the Virtual DOM and how does React use it?", type: "Technical" },
+  { text: "Describe a challenging project you worked on. How did you handle it?", type: "Behavioral" },
+  { text: "What is CSS Box Model? Explain with an example.", type: "Technical" },
+  { text: "Explain the difference between == and === in JavaScript.", type: "Technical" },
+  { text: "How do you handle async operations in JavaScript?", type: "Technical" },
+  { text: "What is your greatest strength as a developer?", type: "Behavioral" },
+  { text: "Where do you see yourself in 5 years?", type: "Behavioral" },
+  { text: "Explain useEffect and useLayoutEffect in React.", type: "Technical" },
+  { text: "What is event delegation in JavaScript?", type: "Technical" },
+  { text: "How do you optimize a website's performance?", type: "Technical" },
+  { text: "Tell me about a time you had a conflict with a teammate.", type: "Behavioral" },
+  { text: "What are Promises and async/await in JavaScript?", type: "Technical" },
+];
 
-  function loadQuestion() {
-    if (currentQ >= questions.length) return;
-    document.getElementById('q-num').textContent = currentQ + 1;
-    document.getElementById('question-text').textContent = questions[currentQ];
-    document.getElementById('q-type').textContent = currentQ < 5 ? 'Technical' : 'HR';
-    document.getElementById('q-type').className = 'q-type ' + (currentQ < 5 ? 'q-technical' : 'q-hr');
-    document.getElementById('progress-text').textContent = `Question ${currentQ + 1} of ${questions.length}`;
-    document.getElementById('progress-fill').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
-    document.getElementById('answer').value = answers[currentQ] || '';
-    document.getElementById('btn-text').textContent = currentQ === questions.length - 1 ? 'Submit Interview ✓' : 'Next Question →';
-    stopMic();
-  }
+let currentQ = 0;
+let answers = [];
+let timer;
+let timeLeft = 120;
+const totalQ = parseInt(config.qCount);
+const questions = QUESTIONS.slice(0, totalQ);
 
-  function toggleMic() {
-    if (isRecording) { stopMic(); return; }
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Voice not supported in this browser. Please use Chrome!');
-      return;
-    }
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    recognition.onresult = (e) => {
-      let transcript = '';
-      for (let i = 0; i < e.results.length; i++) {
-        transcript += e.results[i][0].transcript;
-      }
-      document.getElementById('answer').value = transcript;
-    };
-    recognition.start();
-    isRecording = true;
-    document.getElementById('mic-btn').classList.add('recording');
-    document.getElementById('mic-btn').textContent = '⏹️';
-    document.getElementById('mic-status').textContent = '🔴 Recording... Click to stop';
-    document.getElementById('mic-status').classList.add('active');
-  }
+document.getElementById('metaInfo').textContent = `${config.role} • ${config.diff}`;
+buildDots();
+loadQuestion();
 
-  function stopMic() {
-    if (recognition) { recognition.stop(); recognition = null; }
-    isRecording = false;
-    document.getElementById('mic-btn').classList.remove('recording');
-    document.getElementById('mic-btn').textContent = '🎤';
-    document.getElementById('mic-status').textContent = 'Click mic to start speaking';
-    document.getElementById('mic-status').classList.remove('active');
-  }
+function buildDots() {
+  const c = document.getElementById('dotsContainer');
+  c.innerHTML = '';
+  questions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' curr' : '');
+    d.id = 'dot-' + i;
+    c.appendChild(d);
+  });
+}
 
-  function skipQuestion() {
-    answers[currentQ] = 'I skipped this question.';
-    currentQ++;
-    if (currentQ >= questions.length) submitInterview();
-    else loadQuestion();
-  }
+function loadQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('qLabel').textContent = `Question ${currentQ + 1}`;
+  document.getElementById('qCounter').textContent = `${currentQ + 1} / ${totalQ}`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('qBadge').textContent = q.type;
+  document.getElementById('answerBox').value = '';
+  document.getElementById('wordCount').textContent = '0 words';
+  document.getElementById('progressFill').style.width = ((currentQ + 1) / totalQ * 100) + '%';
+  startTimer();
+}
 
-  function nextQuestion() {
-    const ans = document.getElementById('answer').value.trim();
-    answers[currentQ] = ans || 'No answer provided.';
-    currentQ++;
-    if (currentQ >= questions.length) submitInterview();
-    else loadQuestion();
-  }
+function startTimer() {
+  clearInterval(timer);
+  timeLeft = 120;
+  updateTimerDisplay();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timer); nextQuestion(); }
+  }, 1000);
+}
 
-  async function submitInterview() {
-    document.getElementById('answer-section').style.display = 'none';
-    document.querySelector('.question-card').style.display = 'none';
-    document.getElementById('tip').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timerText').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  const el = document.getElementById('timerEl');
+  el.className = 'timer' + (timeLeft <= 30 ? ' warning' : '');
+}
 
-    try {
-      const res = await fetch('/api/interview/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, answers })
-      });
-      const data = await res.json();
-      localStorage.setItem('result', JSON.stringify(data));
-      localStorage.setItem('answers', JSON.stringify(answers));
-      window.location.href = '/result.html';
-    } catch (e) {
-      alert('Something went wrong! Please try again.');
-    }
-  }
+document.getElementById('answerBox').addEventListener('input', function() {
+  const words = this.value.trim().split(/\s+/).filter(w => w).length;
+  document.getElementById('wordCount').textContent = words + ' words';
+});
 
-  loadQuestion();
+function skipQuestion() {
+  clearInterval(timer);
+  document.getElementById('dot-' + currentQ).className = 'dot skipped';
+  answers.push({ question: questions[currentQ].text, answer: '', skipped: true, score: 0 });
+  if (currentQ < totalQ - 1) { currentQ++; document.getElementById('dot-' + currentQ).className = 'dot curr'; loadQuestion(); }
+  else finish();
+}
+
+function nextQuestion() {
+  clearInterval(timer);
+  const ans = document.getElementById('answerBox').value;
+  document.getElementById('dot-' + currentQ).className = 'dot done';
+  answers.push({ question: questions[currentQ].text, answer: ans, skipped: false, score: Math.floor(Math.random() * 3) + 7 });
+  if (currentQ < totalQ - 1) { currentQ++; document.getElementById('dot-' + currentQ).className = 'dot curr'; loadQuestion(); }
+  else finish();
+}
+
+function finish() {
+  document.getElementById('scoringOverlay').classList.add('show');
+  localStorage.setItem('interviewAnswers', JSON.stringify(answers));
+  localStorage.setItem('interviewConfig', JSON.stringify(config));
+  setTimeout(() => { window.location.href = 'result.html'; }, 2000);
+}
 </script>
 </body>
 </html>
