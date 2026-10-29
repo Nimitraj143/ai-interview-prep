@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Resume ATS Checker — AI Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050810;--card:#111827;--border:#1f2937;
+  --teal:#00D9B5;--teal2:#00b4d8;--gold:#F59E0B;--text:#F9FAFB;--muted:#6B7280;--danger:#EF4444;--green:#22C55E
+}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,217,181,0.12),transparent 70%);top:-200px;left:-200px}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%);bottom:-100px;right:-100px}
+
+nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--text);text-decoration:none}
+.nav-logo-dot{width:10px;height:10px;background:var(--teal);border-radius:50%}
+.nav-link{font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);border:1px solid rgba(0,217,181,0.3);background:rgba(0,217,181,0.08);padding:6px 14px;border-radius:20px;text-decoration:none}
+
+main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:48px 24px 80px}
+h1{font-family:'Instrument Serif',serif;font-size:clamp(34px,5vw,52px);line-height:1.1;margin-bottom:12px}
+h1 em{color:var(--teal);font-style:italic}
+.lead{color:var(--muted);font-size:15px;line-height:1.7;max-width:640px;margin-bottom:32px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px}
+.card h2{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:4px}
+.card .sub{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.tag{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;background:rgba(245,158,11,0.15);color:var(--gold);border:1px solid rgba(245,158,11,0.3)}
+
+.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,0.02)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(0,217,181,0.04)}
+.upload-zone.has-file{border-color:var(--teal);border-style:solid;background:rgba(0,217,181,0.06)}
+.upload-zone input{display:none}
+.upload-zone strong{display:block;font-size:14px;margin-bottom:4px}
+.upload-zone span{font-size:12px;color:var(--muted)}
+.or{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--muted);font-size:12px}
+.or::before,.or::after{content:'';flex:1;height:1px;background:var(--border)}
+textarea{width:100%;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;font-size:13px;font-family:'DM Mono',monospace;color:var(--text);resize:vertical;outline:none;line-height:1.6;transition:border-color .2s}
+textarea:focus{border-color:var(--teal)}
+textarea::placeholder{color:var(--muted)}
+#resumeText{min-height:120px}
+#jdText{min-height:268px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;box-shadow:0 0 30px rgba(0,217,181,0.25)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1px solid var(--teal);color:var(--teal)}
+.btn-outline:hover:not(:disabled){background:rgba(0,217,181,0.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hint{font-size:12px;color:var(--muted)}
+
+.hidden{display:none!important}
+section.result{margin-top:28px}
+
+.score-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.ring{position:relative;width:140px;height:140px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:9}
+.ring-fg{fill:none;stroke-width:9;stroke-linecap:round;stroke-dasharray:376.99;stroke-dashoffset:376.99;transition:stroke-dashoffset 1.1s ease,stroke .3s}
+.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-num{font-family:'Instrument Serif',serif;font-size:42px;line-height:1}
+.ring-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+.score-msg h3{font-family:'Instrument Serif',serif;font-size:26px;margin-bottom:6px}
+.score-msg p{color:var(--muted);font-size:13px;line-height:1.6;max-width:480px}
+.disclaimer{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5}
+
+.bars{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.bar-top span:last-child{font-family:'DM Mono',monospace;color:var(--muted)}
+.bar-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teal),var(--teal2));width:0;transition:width .9s ease}
+.bar-note{font-size:11px;color:var(--muted);margin-top:5px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:'DM Mono',monospace;font-size:12px;padding:5px 12px;border-radius:20px}
+.chip.ok{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
+.chip.miss{background:rgba(245,158,11,0.12);color:var(--gold);border:1px solid rgba(245,158,11,0.3)}
+.kw-label{font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 8px}
+.kw-label:first-of-type{margin-top:0}
+
+ul.list{list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.list li{font-size:13px;line-height:1.6;padding:12px 14px;background:rgba(255,255,255,0.03);border-left:3px solid var(--teal);border-radius:8px}
+ul.list.warn li{border-left-color:var(--gold)}
+
+.compare{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.compare .box{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:14px 22px;text-align:center}
+.compare .box b{display:block;font-family:'Instrument Serif',serif;font-size:34px}
+.compare .box span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+.compare .box.after b{color:var(--teal)}
+.compare .arrow{font-size:22px;color:var(--teal)}
+.compare .delta{font-family:'DM Mono',monospace;font-size:13px;color:var(--green)}
+.warn-box{font-size:12px;line-height:1.6;color:var(--gold);background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:12px 14px;margin:14px 0}
+#tailoredText{min-height:380px;font-size:12.5px}
+.sub-title{font-size:14px;font-weight:700;margin:20px 0 10px}
+
+.toast{position:fixed;bottom:24px;right:24px;max-width:360px;background:var(--danger);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;display:none}
+.spin{width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite}
+.btn-outline .spin{border-color:rgba(0,217,181,.3);border-top-color:var(--teal)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:760px){
+  nav{padding:16px 20px}
+  main{padding:32px 16px 64px}
+  .grid2{grid-template-columns:1fr}
+  #jdText{min-height:160px}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="nav-logo-dot"></div>AI Interview Prep</a>
+  <a class="nav-link" href="index.html">← Mock Interview</a>
+</nav>
+
+<main>
+  <h1>Resume <em>ATS Checker</em></h1>
+  <p class="lead">Upload your resume, paste the job description, and get an ATS score with the keywords you are missing. Then let AI customize your resume for that exact job.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>1. Your resume</h2>
+      <p class="sub">PDF, DOCX or TXT, max 5MB. Or paste the text below.</p>
+      <div class="upload-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt">
+        <strong id="dropTitle">Click or drop your resume here</strong>
+        <span id="dropSub">PDF · DOCX · TXT</span>
+      </div>
+      <div class="or">or paste text</div>
+      <textarea id="resumeText" placeholder="Paste your resume text here..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>2. Job description <span class="tag">recommended</span></h2>
+      <p class="sub">Paste the full JD. We match your resume against its keywords and use it to customize your resume.</p>
+      <textarea id="jdText" placeholder="Paste the job description here..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="checkBtn">Check ATS Score →</button>
+    <span class="hint">Your resume is processed in memory and is not stored.</span>
+  </div>
+
+  <!-- ANALYSIS RESULT -->
+  <section class="result hidden" id="analysis">
+    <div class="card" style="margin-bottom:18px">
+      <div class="score-wrap">
+        <div class="ring">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle class="ring-bg" cx="70" cy="70" r="60"/>
+            <circle class="ring-fg" id="ringFg" cx="70" cy="70" r="60"/>
+          </svg>
+          <div class="ring-text"><div class="ring-num" id="scoreNum">0</div><div class="ring-lbl">/ 100</div></div>
+        </div>
+        <div class="score-msg">
+          <h3 id="scoreTitle"></h3>
+          <p id="scoreDesc"></p>
+        </div>
+      </div>
+      <p class="disclaimer">This is an estimate based on structure, readability and keyword match. Every company's ATS works a little differently, so use it as a guide, not a guarantee.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>Score breakdown</h2>
+        <p class="sub">Where your points come from</p>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="card">
+        <h2>How to improve</h2>
+        <p class="sub">Fix these first</p>
+        <ul class="list" id="suggestions"></ul>
+      </div>
+    </div>
+
+    <div class="card hidden" id="keywordCard" style="margin-bottom:18px">
+      <h2>Keyword match</h2>
+      <p class="sub" id="kwSource"></p>
+      <div class="kw-label">Found in your resume</div>
+      <div class="chips" id="matchedChips"></div>
+      <div class="kw-label">Missing from your resume</div>
+      <div class="chips" id="missingChips"></div>
+    </div>
+
+    <div class="card">
+      <h2>✨ Customize resume for this job</h2>
+      <p class="sub" id="tailorSub">AI rewrites your resume for this job description, using only what is already true about you.</p>
+      <div class="actions">
+        <button class="btn btn-primary" id="tailorBtn">Customize with AI</button>
+        <span class="hint hidden" id="tailorHint">Add a job description above and check again to enable this.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAILORED RESULT -->
+  <section class="result hidden" id="tailored">
+    <div class="card">
+      <h2>Your customized resume</h2>
+      <p class="sub">Tailored to the job description you provided</p>
+
+      <div class="compare">
+        <div class="box"><b id="beforeScore">0</b><span>BEFORE</span></div>
+        <div class="arrow">→</div>
+        <div class="box after"><b id="afterScore">0</b><span>AFTER</span></div>
+        <div class="delta" id="deltaScore"></div>
+      </div>
+
+      <div class="warn-box">⚠️ Read every line before you use this. AI can make mistakes, and you must be able to stand behind everything on your resume in an interview.</div>
+
+      <div class="sub-title">What changed</div>
+      <ul class="list" id="changesList"></ul>
+
+      <div id="gapsWrap" class="hidden">
+        <div class="sub-title">Requirements your resume does not show (not added)</div>
+        <ul class="list warn" id="gapsList"></ul>
+        <p class="hint" style="margin-top:8px">If you really have these skills, add them yourself with an honest example.</p>
+      </div>
+
+      <div class="sub-title">Resume text (you can edit it)</div>
+      <textarea id="tailoredText"></textarea>
+
+      <div class="actions" style="margin-top:16px">
+        <button class="btn btn-primary" id="copyBtn">Copy</button>
+        <button class="btn btn-outline" id="downloadBtn">Download .txt</button>
+        <button class="btn btn-outline" id="recheckBtn">Use as my resume &amp; re-check</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CIRC = 376.99;
+
+let resumeFile = null;
+let last = null; // { resumeText, jobDescription } snapshot of the last analysis
+
+// ---------- helpers ----------
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.style.display = 'none', 4500);
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function setBusy(btn, busy, label) {
+  btn.disabled = busy;
+  btn.innerHTML = '';
+  if (busy) btn.appendChild(el('span', 'spin'));
+  btn.appendChild(document.createTextNode(busy ? ' ' + label : label));
+}
+
+function scoreColor(s) { return s >= 75 ? '#22C55E' : s >= 55 ? '#F59E0B' : '#EF4444'; }
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  let data = {};
+  try { data = await res.json(); } catch (_) {}
+  if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  return data;
+}
+
+// ---------- file input ----------
+const dropZone = $('dropZone');
+dropZone.addEventListener('click', () => $('fileInput').click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+$('fileInput').addEventListener('change', e => setFile(e.target.files[0]));
+
+function setFile(file) {
+  if (!file) return;
+  if (!/\.(pdf|docx|txt)$/i.test(file.name)) { toast('Please upload a PDF, DOCX or TXT file.'); return; }
+  if (file.size > 5 * 1024 * 1024) { toast('File is too large (max 5MB).'); return; }
+  resumeFile = file;
+  dropZone.classList.add('has-file');
+  $('dropTitle').textContent = '📄 ' + file.name;
+  $('dropSub').textContent = (file.size / 1024).toFixed(0) + ' KB · click to change';
+}
+
+function clearFile() {
+  resumeFile = null;
+  $('fileInput').value = '';
+  dropZone.classList.remove('has-file');
+  $('dropTitle').textContent = 'Click or drop your resume here';
+  $('dropSub').textContent = 'PDF · DOCX · TXT';
+}
+
+// ---------- analyze ----------
+$('checkBtn').addEventListener('click', runAnalysis);
+
+async function runAnalysis() {
+  const pasted = $('resumeText').value.trim();
+  const jd = $('jdText').value.trim();
+  if (!resumeFile && !pasted) { toast('Please upload your resume or paste its text.'); return; }
+
+  const fd = new FormData();
+  if (resumeFile) fd.append('resume', resumeFile);
+  else fd.append('resumeText', pasted);
+  fd.append('jobDescription', jd);
+
+  const btn = $('checkBtn');
+  setBusy(btn, true, 'Analyzing...');
+  try {
+    const data = await api('/api/resume/analyze', { method: 'POST', body: fd });
+    last = { resumeText: data.resumeText, jobDescription: jd };
+    renderAnalysis(data);
+    $('tailored').classList.add('hidden');
+    $('analysis').classList.remove('hidden');
+    $('analysis').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    toast(err.message);
+  } finally {
+    setBusy(btn, false, 'Check ATS Score →');
+  }
+}
+
+function renderAnalysis(d) {
+  // score ring
+  $('scoreNum').textContent = d.score;
+  const fg = $('ringFg');
+  fg.style.stroke = scoreColor(d.score);
+  fg.style.strokeDashoffset = CIRC;
+  requestAnimationFrame(() => requestAnimationFrame(() => { fg.style.strokeDashoffset = CIRC * (1 - d.score / 100); }));
+
+  const [title, desc] =
+    d.score >= 80 ? ['Strong ATS match', 'Your resume is well structured and should pass most ATS screens.'] :
+    d.score >= 60 ? ['Decent, with room to improve', 'A few fixes below could noticeably raise your chances.'] :
+                    ['Needs work', 'Your resume is likely to be filtered out. Start with the suggestions below.'];
+  $('scoreTitle').textContent = title;
+  $('scoreDesc').textContent = d.hasJobDescription
+    ? desc
+    : desc + ' Add a job description to also check keyword match.';
+
+  // breakdown bars
+  const bars = $('bars');
+  bars.innerHTML = '';
+  d.breakdown.forEach(b => {
+    const wrap = el('div');
+    const top = el('div', 'bar-top');
+    top.appendChild(el('span', '', b.label));
+    top.appendChild(el('span', '', `${Math.round(b.score)} / ${b.max}`));
+    const track = el('div', 'bar-track');
+    const fill = el('div', 'bar-fill');
+    track.appendChild(fill);
+    wrap.append(top, track, el('div', 'bar-note', b.note));
+    bars.appendChild(wrap);
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = (b.score / b.max * 100) + '%'; }));
+  });
+
+  // suggestions
+  const sug = $('suggestions');
+  sug.innerHTML = '';
+  (d.suggestions.length ? d.suggestions : ['Looks good. No major issues found.']).forEach(s => sug.appendChild(el('li', '', s)));
+
+  // keywords
+  const kwCard = $('keywordCard');
+  if (d.hasJobDescription) {
+    kwCard.classList.remove('hidden');
+    $('kwSource').textContent = d.keywordSource === 'ai'
+      ? 'Keywords were picked out of the job description by AI.'
+      : 'AI was unavailable, so keywords were picked using a basic word-frequency method. Results may be less accurate.';
+    fillChips($('matchedChips'), d.keywords.matched, 'ok', 'None found');
+    fillChips($('missingChips'), d.keywords.missing, 'miss', 'Nothing missing 🎉');
+  } else {
+    kwCard.classList.add('hidden');
+  }
+
+  // tailor button state
+  const canTailor = d.hasJobDescription;
+  $('tailorBtn').disabled = !canTailor;
+  $('tailorHint').classList.toggle('hidden', canTailor);
+}
+
+function fillChips(container, items, cls, emptyText) {
+  container.innerHTML = '';
+  if (!items.length) { container.appendChild(el('span', 'hint', emptyText)); return; }
+  items.forEach(t => container.appendChild(el('span', 'chip ' + cls, t)));
+}
+
+// ---------- tailor ----------
+$('tailorBtn').addEventListener('click', async () => {
+  if (!last || !last.jobDescription) return;
+  const btn = $('tailorBtn');
+  setBusy(btn, true, 'Customizing... (can take up to a minute)');
+  try {
+    const d = await api('/api/resume/tailor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resumeText: last.resumeText, jobDescription: last.jobDescription })
+    });
+    renderTailored(d);
+    $('tailored').classList.remove('hidden');
+    $('tailored').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    toast(err.message);
+  } finally {
+    setBusy(btn, false, 'Customize with AI');
+  }
+});
+
+function renderTailored(d) {
+  $('beforeScore').textContent = d.before.score;
+  $('afterScore').textContent = d.after.score;
+  const diff = d.after.score - d.before.score;
+  $('deltaScore').textContent = diff > 0 ? `+${diff} points` : diff === 0 ? 'No change' : `${diff} points`;
+  $('deltaScore').style.color = diff >= 0 ? '#22C55E' : '#EF4444';
+
+  const ch = $('changesList');
+  ch.innerHTML = '';
+  (d.changes.length ? d.changes : ['Resume reworded and reordered for this job.']).forEach(c => ch.appendChild(el('li', '', c)));
+
+  const gl = $('gapsList');
+  gl.innerHTML = '';
+  d.gaps.forEach(g => gl.appendChild(el('li', '', g)));
+  $('gapsWrap').classList.toggle('hidden', d.gaps.length === 0);
+
+  $('tailoredText').value = d.tailoredResume;
+}
+
+$('copyBtn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('tailoredText').value);
+    $('copyBtn').textContent = 'Copied ✓';
+    setTimeout(() => $('copyBtn').textContent = 'Copy', 1800);
+  } catch (_) {
+    $('tailoredText').select();
+    toast('Press Ctrl+C to copy the selected text.');
+  }
+});
+
+$('downloadBtn').addEventListener('click', () => {
+  const blob = new Blob([$('tailoredText').value], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tailored-resume.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+$('recheckBtn').addEventListener('click', () => {
+  clearFile();
+  $('resumeText').value = $('tailoredText').value;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  runAnalysis();
+});
+</script>
+</body>
+</html>

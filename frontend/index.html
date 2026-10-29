@@ -3,305 +3,519 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI Interview Prep — Crack Your Dream Job</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>AI Interview Prep — Practice interviews from your resume</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#050810;
-  --surface:#0d1117;
-  --card:#111827;
-  --border:#1f2937;
-  --teal:#00D9B5;
-  --teal2:#00b4d8;
-  --purple:#7C3AED;
-  --gold:#F59E0B;
-  --text:#F9FAFB;
-  --muted:#6B7280;
-  --danger:#EF4444;
+  --bg:#fafaf9;
+  --surface:#f3f2f0;
+  --card:#ffffff;
+  --border:#e7e5e4;
+  --accent:#2563eb;
+  --accent-hover:#1d4ed8;
+  --text:#111827;
+  --muted:#57534e;
+  --ok:#15803d;
+  --warn:#b45309;
+  --danger:#dc2626;
 }
 html{scroll-behavior:smooth}
-body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
 
-/* ── NOISE OVERLAY ── */
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;opacity:0.4
-}
-
-/* ── GLOW ORBS ── */
-.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
-.orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,217,181,0.12),transparent 70%);top:-200px;left:-200px}
-.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%);bottom:-100px;right:-100px}
-.orb-3{width:300px;height:300px;background:radial-gradient(circle,rgba(0,180,216,0.08),transparent 70%);top:40%;left:50%;transform:translateX(-50%)}
+/* ── ICONS ── */
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:inline-block;vertical-align:middle}
 
 /* ── NAV ── */
-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border)}
-.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:-0.5px}
-.nav-logo-dot{width:10px;height:10px;background:var(--teal);border-radius:50%;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,217,181,0.4)}50%{opacity:0.6;box-shadow:0 0 0 8px rgba(0,217,181,0)}}
-.nav-badge{font-family:'DM Mono',monospace;font-size:11px;background:rgba(0,217,181,0.1);border:1px solid rgba(0,217,181,0.3);color:var(--teal);padding:4px 12px;border-radius:20px}
+nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 48px;border-bottom:1px solid var(--border);background:rgba(250,250,249,0.92);backdrop-filter:blur(10px)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;transition:color .15s,background .15s;display:inline-flex;align-items:center;gap:6px}
+.nav-links a:hover{color:var(--text);background:rgba(17,24,39,0.05)}
+.nav-links a.nav-cta{color:#fff;background:var(--accent);font-weight:600;margin-left:6px}
+.nav-links a.nav-cta:hover{background:var(--accent-hover)}
 
 /* ── PAGES ── */
-.page{display:none;position:relative;z-index:1}
+.page{display:none}
 .page.active{display:block}
 
-/* ── HERO / PAGE 1 ── */
-.hero{padding:80px 48px 60px;max-width:900px;margin:0 auto;text-align:center}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);border:1px solid rgba(0,217,181,0.25);background:rgba(0,217,181,0.06);padding:6px 16px;border-radius:20px;margin-bottom:32px;animation:fadeUp 0.6s ease both}
-.hero-tag span{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:blink 1.5s infinite}
-.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(44px,7vw,84px);line-height:1.05;margin-bottom:24px;animation:fadeUp 0.6s 0.1s ease both;opacity:0}
-.hero h1 em{font-style:italic;color:var(--teal)}
-.hero p{font-size:18px;color:var(--muted);line-height:1.7;max-width:560px;margin:0 auto 48px;animation:fadeUp 0.6s 0.2s ease both;opacity:0}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:10px;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;border:1px solid transparent;transition:background .15s,border-color .15s,transform .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{background:transparent;color:var(--text);border-color:var(--border)}
+.btn-outline:hover{border-color:var(--muted);background:rgba(17,24,39,0.03)}
+.btn .ic{font-size:17px}
 
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;animation:fadeUp 0.6s 0.3s ease both;opacity:0}
-.feat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:left;transition:border-color 0.2s}
-.feat:hover{border-color:rgba(0,217,181,0.3)}
-.feat-icon{font-size:28px;margin-bottom:10px}
-.feat h3{font-size:14px;font-weight:700;margin-bottom:6px}
-.feat p{font-size:12px;color:var(--muted);line-height:1.6}
+/* ── LANDING: HERO ── */
+.wrap{max-width:1120px;margin:0 auto;padding:0 48px}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;padding:84px 0 72px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:22px}
+.eyebrow .ic{color:var(--accent);font-size:14px}
+.hero h1{font-size:clamp(34px,5vw,52px);line-height:1.15;font-weight:700;margin-bottom:20px}
+.hero h1 span{color:var(--accent)}
+.hero .lead{font-size:17px;color:var(--muted);max-width:480px;margin-bottom:32px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+.hero-points{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.hero-points span{display:inline-flex;align-items:center;gap:6px}
+.hero-points .ic{color:var(--ok);font-size:15px}
 
-.btn-start{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;border:none;border-radius:50px;cursor:pointer;transition:all 0.2s;animation:fadeUp 0.6s 0.4s ease both;opacity:0;box-shadow:0 0 40px rgba(0,217,181,0.3)}
-.btn-start:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(0,217,181,0.5)}
-.btn-start svg{width:18px;height:18px}
+/* preview card */
+.preview{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 12px 32px rgba(17,24,39,0.08)}
+.preview-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);font-family:inherit;font-size:12px;color:var(--muted)}
+.preview-body{padding:22px}
+.preview-prog{height:3px;background:var(--border);border-radius:99px;margin-bottom:18px;overflow:hidden}
+.preview-prog div{height:100%;width:30%;background:var(--accent)}
+.preview-q{font-size:18px;font-weight:500;line-height:1.5;margin:12px 0 18px}
+.preview-ans{border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;color:var(--muted);background:rgba(17,24,39,0.02);margin-bottom:16px}
+.preview-fb{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--border);border-left:3px solid var(--ok);border-radius:10px;padding:12px 14px;font-size:13px;color:#44403c}
+.preview-fb b{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:rgba(21,128,61,0.14);color:var(--ok);font-family:inherit;flex-shrink:0}
+.sample-note{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-family:inherit}
 
-/* ── PAGE 2 — SETUP ── */
-.setup{max-width:680px;margin:0 auto;padding:60px 48px}
-.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:48px}
+/* ── LANDING: SECTIONS ── */
+section.block{padding:72px 0;border-top:1px solid var(--border)}
+.sec-head{max-width:560px;margin-bottom:40px}
+.sec-label{font-family:inherit;font-size:12px;color:var(--accent);margin-bottom:10px;}
+.sec-head h2{font-size:32px;font-weight:700;line-height:1.2;margin-bottom:10px}
+.sec-head p{color:var(--muted);font-size:16px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px}
+.step-no{font-family:inherit;font-size:12px;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.step-no .ic{font-size:22px;color:var(--accent)}
+.step-card h3{font-size:17px;font-weight:600;margin-bottom:6px}
+.step-card p{font-size:14px;color:var(--muted)}
+
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.feat{display:flex;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color .15s}
+.feat:hover{border-color:#c8c5c1}
+.feat-ic{width:42px;height:42px;border-radius:10px;background:rgba(37,99,235,0.12);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.feat h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.feat p{font-size:14px;color:var(--muted)}
+
+.ats-banner{display:flex;align-items:center;justify-content:space-between;gap:28px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:34px 38px}
+.ats-banner h2{font-size:24px;font-weight:700;margin-bottom:6px}
+.ats-banner p{color:var(--muted);font-size:15px;max-width:520px}
+.ats-list{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+.ats-list span{display:inline-flex;align-items:center;gap:6px}
+.ats-list .ic{color:var(--ok)}
+
+.faq{max-width:760px}
+.faq details{border-bottom:1px solid var(--border)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;font-size:16px;font-weight:500}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ic{color:var(--muted);transition:transform .2s}
+.faq details[open] summary .ic{transform:rotate(45deg);color:var(--accent)}
+.faq details p{padding:0 0 20px;color:var(--muted);font-size:14.5px;max-width:640px}
+.faq details p a{color:var(--accent)}
+
+.cta{text-align:center;padding:72px 0;border-top:1px solid var(--border)}
+.cta h2{font-size:34px;font-weight:700;margin-bottom:10px}
+.cta p{color:var(--muted);margin-bottom:26px}
+
+footer{border-top:1px solid var(--border);padding:44px 0 28px;background:var(--surface)}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;margin-bottom:34px}
+.foot-brand p{color:var(--muted);font-size:14px;margin-top:12px;max-width:320px}
+.foot-col h4{font-size:12px;font-family:inherit;color:var(--muted);margin-bottom:14px;font-weight:500}
+.foot-col a{display:flex;align-items:center;gap:8px;font-size:14px;color:#44403c;text-decoration:none;padding:5px 0;cursor:pointer}
+.foot-col a:hover{color:var(--accent)}
+.foot-bottom{border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+
+/* ── SETUP / RESUME CARDS ── */
+.setup,.resume-page{max-width:680px;margin:0 auto;padding:56px 24px}
+.step-indicator{display:flex;align-items:center;margin-bottom:40px}
 .step{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1}
-.step-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--muted);transition:all 0.3s;font-family:'DM Mono',monospace}
-.step.active .step-circle{border-color:var(--teal);color:var(--teal);box-shadow:0 0 20px rgba(0,217,181,0.3)}
-.step.done .step-circle{background:var(--teal);border-color:var(--teal);color:#000}
-.step-label{font-size:11px;color:var(--muted);text-align:center}
-.step.active .step-label{color:var(--teal)}
+.step-circle{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--muted);transition:all .3s;font-family:inherit}
+.step.active .step-circle{border-color:var(--accent);color:var(--accent)}
+.step.done .step-circle{background:var(--accent);border-color:var(--accent);color:#fff}
+.step-label{font-size:12px;color:var(--muted)}
+.step.active .step-label{color:var(--accent)}
 .step-line{flex:1;height:1px;background:var(--border);margin-bottom:20px}
-.step-line.done{background:var(--teal)}
+.step-line.done{background:var(--accent)}
 
-.setup-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px}
-.setup-card h2{font-family:'Instrument Serif',serif;font-size:28px;margin-bottom:6px}
-.setup-card .sub{font-size:13px;color:var(--muted);margin-bottom:28px}
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px}
+.setup-card h2{font-size:24px;font-weight:700;margin-bottom:4px}
+.setup-card .sub{font-size:14px;color:var(--muted);margin-bottom:26px}
 
-.frow{margin-bottom:20px}
-.frow label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace}
-.frow input,.frow select{width:100%;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;font-size:14px;font-family:'Syne',sans-serif;color:var(--text);transition:all 0.2s;outline:none}
-.frow input:focus,.frow select:focus{border-color:var(--teal);background:rgba(0,217,181,0.04);box-shadow:0 0 0 3px rgba(0,217,181,0.1)}
-.frow select option{background:#1f2937}
+.frow{margin-bottom:18px}
+.frow label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;font-family:inherit}
+.frow input,.frow select{width:100%;padding:12px 14px;background:rgba(17,24,39,0.03);border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);transition:border-color .15s;outline:none}
+.frow input:focus,.frow select:focus{border-color:var(--accent)}
+.frow select option{background:#ffffff}
 .frow input::placeholder{color:var(--muted)}
 
 .level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.level-opt{padding:14px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif;font-size:13px;color:var(--muted)}
-.level-opt:hover{border-color:rgba(0,217,181,0.3);color:var(--text)}
-.level-opt.sel{background:rgba(0,217,181,0.1);border-color:var(--teal);color:var(--teal);font-weight:700}
-.level-opt .level-icon{font-size:22px;display:block;margin-bottom:6px}
-
+.level-opt{padding:14px 10px;background:rgba(17,24,39,0.02);border:1px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .15s;font-family:inherit;font-size:13px;color:var(--muted)}
+.level-opt:hover{border-color:#c8c5c1;color:var(--text)}
+.level-opt.sel{background:rgba(37,99,235,0.1);border-color:var(--accent);color:var(--accent);font-weight:600}
+.level-opt .ic{display:block;font-size:22px;margin:0 auto 8px}
 .frow-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-.btn-next-step{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;margin-top:8px;transition:all 0.2s}
-.btn-next-step:hover{opacity:0.9;transform:translateY(-1px)}
-.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%;padding:12px;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;cursor:pointer;margin-top:10px;transition:all 0.2s}
+.btn-next-step{width:100%;padding:13px;background:var(--accent);color:#fff;font-family:inherit;font-weight:600;font-size:15px;border:none;border-radius:10px;cursor:pointer;margin-top:8px;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-next-step:hover{background:var(--accent-hover)}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%;padding:12px;border-radius:10px;font-family:inherit;font-size:14px;cursor:pointer;margin-top:10px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-back:hover{border-color:var(--muted);color:var(--text)}
 
-/* ── PAGE 3 — RESUME ── */
-.resume-page{max-width:680px;margin:0 auto;padding:60px 48px}
-.upload-zone{border:2px dashed var(--border);border-radius:20px;padding:60px 32px;text-align:center;cursor:pointer;transition:all 0.3s;background:rgba(255,255,255,0.02)}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(0,217,181,0.04)}
-.upload-zone.has-file{border-color:var(--teal);border-style:solid;background:rgba(0,217,181,0.06)}
-.upload-icon{font-size:48px;margin-bottom:16px;opacity:0.6}
-.upload-zone h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.upload-zone{border:1.5px dashed var(--border);border-radius:14px;padding:44px 24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(17,24,39,0.015)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(37,99,235,0.04)}
+.upload-zone.has-file{border-color:var(--accent);border-style:solid;background:rgba(37,99,235,0.06)}
+.upload-icon{font-size:34px;margin-bottom:12px;color:var(--muted)}
+.upload-zone h3{font-size:16px;font-weight:600;margin-bottom:6px}
 .upload-zone p{font-size:13px;color:var(--muted)}
 .upload-zone input{display:none}
-.file-info{display:flex;align-items:center;gap:12px;background:rgba(0,217,181,0.08);border:1px solid rgba(0,217,181,0.2);border-radius:12px;padding:14px 18px;margin-top:20px;display:none}
+.file-info{align-items:center;gap:12px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.25);border-radius:10px;padding:12px 16px;margin-top:16px;display:none}
 .file-info.show{display:flex}
-.file-info-icon{font-size:24px}
+.file-info-icon{font-size:22px;color:var(--accent)}
 .file-info-text{flex:1;text-align:left}
-.file-info-name{font-size:14px;font-weight:600;color:var(--teal)}
+.file-info-name{font-size:14px;font-weight:600;color:var(--accent)}
 .file-info-size{font-size:12px;color:var(--muted)}
-.file-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px}
+.file-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;display:flex}
 .file-remove:hover{color:var(--danger)}
-
-.or-divider{display:flex;align-items:center;gap:16px;margin:24px 0;color:var(--muted);font-size:13px}
+.or-divider{display:flex;align-items:center;gap:16px;margin:22px 0;color:var(--muted);font-size:13px}
 .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-
-.paste-box{width:100%;min-height:140px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;font-size:13px;font-family:'DM Mono',monospace;color:var(--text);resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.7}
-.paste-box:focus{border-color:var(--teal);background:rgba(0,217,181,0.03)}
+.paste-box{width:100%;min-height:140px;padding:14px;background:rgba(17,24,39,0.03);border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);resize:vertical;outline:none;transition:border-color .15s;line-height:1.7}
+.paste-box:focus{border-color:var(--accent)}
 .paste-box::placeholder{color:var(--muted)}
 
 /* ── LOADING ── */
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,16,0.92);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:24px;backdrop-filter:blur(8px)}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(250,250,249,0.95);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:22px;backdrop-filter:blur(6px)}
 .loading-overlay.show{display:flex}
-.loading-ring{width:64px;height:64px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite}
+.loading-ring{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-family:'DM Mono',monospace;font-size:14px;color:var(--teal)}
+.loading-text{font-family:inherit;font-size:14px;color:var(--accent)}
 .loading-steps{display:flex;flex-direction:column;gap:8px;text-align:left}
-.ls{font-size:12px;color:var(--muted);display:flex;align-items:center;gap-8px;gap:10px;transition:color 0.3s}
-.ls.done{color:var(--teal)}
+.ls{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px;transition:color .3s}
+.ls.done{color:var(--ok)}
 .ls::before{content:'○';font-size:10px}
 .ls.done::before{content:'●'}
 
-/* ── PAGE 4 — INTERVIEW ── */
-.interview-page{max-width:720px;margin:0 auto;padding:40px 48px}
-.int-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
-.int-meta{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
-.int-meta strong{color:var(--teal)}
+/* ── INTERVIEW ── */
+.interview-page{max-width:720px;margin:0 auto;padding:40px 24px}
+.int-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.int-meta{font-family:inherit;font-size:12px;color:var(--muted)}
+.int-meta strong{color:var(--accent);font-weight:500}
 .timer-ring-wrap{position:relative;width:56px;height:56px}
 .timer-ring-wrap svg{transform:rotate(-90deg)}
 .timer-ring-bg{fill:none;stroke:var(--border);stroke-width:3}
-.timer-ring-fill{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke 0.3s}
-.timer-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
-
-.progress-track{height:3px;background:var(--border);border-radius:99px;margin-bottom:28px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:99px;transition:width 0.5s ease}
-
-.q-dots{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
-.qdot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:default;transition:all 0.3s}
-.qdot.curr{background:var(--teal);box-shadow:0 0 10px rgba(0,217,181,0.5)}
-.qdot.done{background:rgba(0,217,181,0.4)}
-.qdot.skip{background:rgba(107,114,128,0.4)}
-
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:20px}
-.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.q-type{font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500}
-.q-type.Technical{background:rgba(0,180,216,0.15);color:#00b4d8;border:1px solid rgba(0,180,216,0.3)}
-.q-type.Behavioral{background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3)}
-.q-type.Situational{background:rgba(245,158,11,0.15);color:var(--gold);border:1px solid rgba(245,158,11,0.3)}
-.q-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
-.q-text{font-family:'Instrument Serif',serif;font-size:22px;line-height:1.5;color:var(--text)}
-
-.ans-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
-.ans-box{width:100%;min-height:140px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;font-size:14px;font-family:'Syne',sans-serif;color:var(--text);resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.7}
-.ans-box:focus{border-color:var(--teal);background:rgba(0,217,181,0.03)}
+.timer-ring-fill{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s}
+.timer-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:12px;font-weight:500;color:var(--text)}
+.progress-track{height:3px;background:var(--border);border-radius:99px;margin-bottom:24px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .5s ease}
+.q-dots{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.qdot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s}
+.qdot.curr{background:var(--accent)}
+.qdot.done{background:rgba(37,99,235,0.4)}
+.qdot.skip{background:rgba(87,83,78,0.4)}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;margin-bottom:20px}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.q-type{font-family:inherit;font-size:11px;padding:4px 10px;border-radius:6px;font-weight:500}
+.q-type.Technical{background:rgba(37,99,235,0.14);color:#1d4ed8;border:1px solid rgba(37,99,235,0.3)}
+.q-type.Behavioral{background:rgba(109,40,217,0.14);color:#6d28d9;border:1px solid rgba(109,40,217,0.3)}
+.q-type.Situational{background:rgba(180,83,9,0.14);color:var(--warn);border:1px solid rgba(180,83,9,0.3)}
+.q-num{font-family:inherit;font-size:12px;color:var(--muted)}
+.q-text{font-size:20px;line-height:1.5;font-weight:500}
+.ans-label{font-size:11px;font-family:inherit;color:var(--muted);margin-bottom:8px}
+.ans-box{width:100%;min-height:140px;padding:14px;background:rgba(17,24,39,0.03);border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);resize:vertical;outline:none;transition:border-color .15s;line-height:1.7}
+.ans-box:focus{border-color:var(--accent)}
 .ans-box::placeholder{color:var(--muted)}
-.ans-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:20px;font-family:'DM Mono',monospace}
-
+.ans-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:18px;font-family:inherit}
+.ans-footer span{display:inline-flex;align-items:center;gap:6px}
 .btn-row{display:flex;gap:10px}
-.btn-skip-q{flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s}
+.btn-skip-q{flex:1;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-weight:500;font-size:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-skip-q:hover{border-color:var(--muted);color:var(--text)}
-.btn-submit-q{flex:2;padding:13px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;transition:all 0.2s}
-.btn-submit-q:hover{opacity:0.9;transform:translateY(-1px)}
+.btn-submit-q{flex:2;padding:12px;background:var(--accent);color:#fff;font-family:inherit;font-weight:600;font-size:15px;border:none;border-radius:10px;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit-q:hover{background:var(--accent-hover)}
 
-/* ── PAGE 5 — RESULTS ── */
-.results-page{max-width:760px;margin:0 auto;padding:60px 48px}
-.result-hero{text-align:center;margin-bottom:48px}
-.score-ring{width:160px;height:160px;margin:0 auto 24px;position:relative}
+/* ── RESULTS ── */
+.results-page{max-width:760px;margin:0 auto;padding:56px 24px}
+.result-hero{text-align:center;margin-bottom:40px}
+.score-ring{width:160px;height:160px;margin:0 auto 22px;position:relative}
 .score-ring svg{transform:rotate(-90deg)}
 .score-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.score-big{font-family:'Instrument Serif',serif;font-size:48px;font-weight:700;color:var(--teal)}
-.score-label{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
-.result-hero h2{font-family:'Instrument Serif',serif;font-size:36px;margin-bottom:8px}
+.score-big{font-size:46px;font-weight:700;color:var(--accent);}
+.score-label{font-size:12px;color:var(--muted);font-family:inherit}
+.result-hero h2{font-size:30px;font-weight:700;margin-bottom:6px}
 .result-hero p{color:var(--muted);font-size:15px}
-
-.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
-.rstat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
-.rstat .rnum{font-family:'Instrument Serif',serif;font-size:32px;color:var(--text)}
-.rstat .rlbl{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:4px}
-
-.qa-list{display:flex;flex-direction:column;gap:14px;margin-bottom:32px}
-.qa-item{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer}
-.qa-head{display:flex;align-items:center;gap:14px;padding:18px 20px}
-.qa-score-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:'DM Mono',monospace;flex-shrink:0}
-.qa-score-badge.high{background:rgba(0,217,181,0.15);color:var(--teal)}
-.qa-score-badge.mid{background:rgba(245,158,11,0.15);color:var(--gold)}
-.qa-score-badge.low{background:rgba(239,68,68,0.15);color:var(--danger)}
-.qa-score-badge.skip{background:rgba(107,114,128,0.15);color:var(--muted)}
-.qa-q{flex:1;font-size:14px;font-weight:600;line-height:1.4}
-.qa-arr{color:var(--muted);transition:transform 0.2s;font-size:18px}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.rstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center}
+.rstat .rnum{font-size:28px;font-weight:700}
+.rstat .rlbl{font-size:12px;color:var(--muted);font-family:inherit;margin-top:4px}
+.qa-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.qa-item{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer}
+.qa-head{display:flex;align-items:center;gap:14px;padding:16px 18px}
+.qa-score-badge{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;font-family:inherit;flex-shrink:0}
+.qa-score-badge.high{background:rgba(21,128,61,0.14);color:var(--ok)}
+.qa-score-badge.mid{background:rgba(180,83,9,0.14);color:var(--warn)}
+.qa-score-badge.low{background:rgba(220,38,38,0.14);color:var(--danger)}
+.qa-score-badge.skip{background:rgba(87,83,78,0.14);color:var(--muted)}
+.qa-q{flex:1;font-size:14px;font-weight:500;line-height:1.4}
+.qa-arr{color:var(--muted);transition:transform .2s;font-size:18px;display:flex}
 .qa-item.open .qa-arr{transform:rotate(180deg)}
-.qa-body{display:none;padding:0 20px 18px;border-top:1px solid var(--border)}
+.qa-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border)}
 .qa-item.open .qa-body{display:block}
-.qa-your-ans{font-size:13px;color:var(--muted);line-height:1.7;margin-top:14px;padding:14px;background:rgba(255,255,255,0.02);border-radius:10px;border-left:3px solid var(--border)}
-.qa-ai-feedback{font-size:13px;line-height:1.7;margin-top:12px;padding:14px;background:rgba(0,217,181,0.05);border-radius:10px;border-left:3px solid var(--teal);color:rgba(255,255,255,0.75)}
-.qa-feedback-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em}
-
-.btn-retake{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;transition:all 0.2s;margin-right:12px}
-.btn-retake:hover{background:rgba(0,217,181,0.1)}
-.btn-new{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:50px;cursor:pointer;transition:all 0.2s}
-.btn-new:hover{opacity:0.9}
+.qa-your-ans{font-size:13px;color:var(--muted);line-height:1.7;margin-top:8px;padding:12px 14px;background:rgba(17,24,39,0.02);border-radius:8px;border-left:3px solid var(--border)}
+.qa-ai-feedback{font-size:13px;line-height:1.7;margin-top:8px;padding:12px 14px;background:rgba(37,99,235,0.06);border-radius:8px;border-left:3px solid var(--accent);color:#44403c}
+.qa-feedback-label{font-family:inherit;font-size:10px;color:var(--muted);margin-top:14px;}
+.result-actions{text-align:center;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--danger);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;display:none;animation:slideInRight 0.3s ease}
-@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--danger);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;display:none}
 
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;gap:40px;padding:48px 0}
+  .steps,.feat-grid{grid-template-columns:1fr}
+  .ats-banner{flex-direction:column;align-items:flex-start;padding:26px}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .foot-brand{grid-column:1 / -1}
+}
 @media(max-width:640px){
-  nav{padding:16px 20px}
-  .hero{padding:40px 20px 40px}
-  .hero h1{font-size:38px}
-  .features{grid-template-columns:1fr}
-  .setup,.resume-page,.interview-page,.results-page{padding:40px 20px}
+  nav{padding:12px 16px}
+  .nav-links a:not(.nav-cta){display:none}
+  .wrap{padding:0 20px}
+  .setup,.resume-page,.interview-page,.results-page{padding:36px 16px}
   .result-grid{grid-template-columns:repeat(2,1fr)}
   .frow-2{grid-template-columns:1fr}
+  .setup-card{padding:24px 20px}
 }
 </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
+<!-- ICON SPRITE (Lucide-style line icons) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  </defs>
+</svg>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    <div class="nav-logo-dot"></div>
+  <a class="nav-logo" onclick="goPage(1)">
+    <span class="logo-mark"><svg class="ic"><use href="#i-message"/></svg></span>
     AI Interview Prep
+  </a>
+  <div class="nav-links">
+    <a href="#how" onclick="goPage(1)">How it works</a>
+    <a href="#faq" onclick="goPage(1)">FAQ</a>
+    <a href="resume.html"><svg class="ic"><use href="#i-file"/></svg>Resume ATS Checker</a>
+    <a class="nav-cta" onclick="goPage(2)" style="cursor:pointer">Start practice</a>
   </div>
-  <span class="nav-badge" id="navBadge">Free • Powered by Gemini</span>
 </nav>
 
 <!-- PAGE 1: LANDING -->
 <div class="page active" id="page1">
-  <div class="hero">
-    <div class="hero-tag"><span></span> AI-Powered Mock Interviews</div>
-    <h1>Crack Your<br><em>Dream Interview</em></h1>
-    <p>Upload your resume, pick your role — our AI generates personalized questions and scores your answers like a real interviewer.</p>
-    <div class="features">
-      <div class="feat">
-        <div class="feat-icon">📄</div>
-        <h3>Resume-Based Questions</h3>
-        <p>AI reads your resume and asks questions tailored to your actual experience</p>
+
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="eyebrow"><svg class="ic"><use href="#i-target"/></svg>Mock interviews built from your resume</div>
+        <h1>Practice the interview <span>before</span> the real one.</h1>
+        <p class="lead">Paste your resume, choose a role, and answer timed questions that match your experience. Every answer gets a score and written feedback.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="goPage(2)">Start interview prep<svg class="ic"><use href="#i-arrow-right"/></svg></button>
+          <a class="btn btn-outline" href="resume.html"><svg class="ic"><use href="#i-file"/></svg>Check resume ATS score</a>
+        </div>
+        <div class="hero-points">
+          <span><svg class="ic"><use href="#i-check"/></svg>Free to use</span>
+          <span><svg class="ic"><use href="#i-check"/></svg>5, 10 or 15 questions</span>
+          <span><svg class="ic"><use href="#i-check"/></svg>2 minutes per answer</span>
+        </div>
       </div>
-      <div class="feat">
-        <div class="feat-icon">🤖</div>
-        <h3>Real-time AI Scoring</h3>
-        <p>Get instant feedback and scores on each answer from Gemini AI</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">📊</div>
-        <h3>Detailed Report</h3>
-        <p>Full breakdown of strengths, weaknesses and improvement tips</p>
+
+      <div>
+        <div class="preview">
+          <div class="preview-bar">
+            <span>Backend Developer · Fresher</span>
+            <span style="display:inline-flex;align-items:center;gap:6px"><svg class="ic"><use href="#i-clock"/></svg>1:24</span>
+          </div>
+          <div class="preview-body">
+            <div class="preview-prog"><div></div></div>
+            <span class="q-type Technical">Technical</span>
+            <p class="preview-q">How would you handle a slow MongoDB query in a Node.js API?</p>
+            <div class="preview-ans">I would first check the query with explain(), then add an index on the fields used in the filter…</div>
+            <div class="preview-fb">
+              <b>8</b>
+              <span>Good start. Mention how you would measure the improvement after adding the index.</span>
+            </div>
+          </div>
+        </div>
+        <p class="sample-note">Sample question, not a real result</p>
       </div>
     </div>
-    <button class="btn-start" onclick="goPage(2)">
-      Start Interview Prep
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
   </div>
+
+  <section class="block" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="sec-label">How it works</div>
+        <h2>From resume to feedback in three steps</h2>
+        <p>No account setup. Open the page, answer questions, read your report.</p>
+      </div>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-no"><span>01</span><svg class="ic"><use href="#i-file"/></svg></div>
+          <h3>Add your resume and role</h3>
+          <p>Enter the role you want, your level and how many questions you need. Paste your resume text so questions match your projects and skills.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-no"><span>02</span><svg class="ic"><use href="#i-clock"/></svg></div>
+          <h3>Answer under a timer</h3>
+          <p>Each question has a 2 minute timer, like a real round. You can skip any question and come back to the idea later.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-no"><span>03</span><svg class="ic"><use href="#i-chart"/></svg></div>
+          <h3>Read your report</h3>
+          <p>See an overall score, a score for every answer and short feedback on what to improve. Retake the same set to compare.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="sec-label">What you get</div>
+        <h2>Built for practice, not just a question list</h2>
+      </div>
+      <div class="feat-grid">
+        <div class="feat">
+          <div class="feat-ic"><svg class="ic"><use href="#i-file"/></svg></div>
+          <div><h3>Questions from your resume</h3><p>Technical, behavioral and situational questions generated from the background you provide, at the difficulty you pick.</p></div>
+        </div>
+        <div class="feat">
+          <div class="feat-ic"><svg class="ic"><use href="#i-clock"/></svg></div>
+          <div><h3>Timed answers</h3><p>A countdown keeps you honest and trains you to answer clearly instead of rambling.</p></div>
+        </div>
+        <div class="feat">
+          <div class="feat-ic"><svg class="ic"><use href="#i-award"/></svg></div>
+          <div><h3>Score and feedback per answer</h3><p>Every answer is scored out of 10 with a short note on what was missing, so you know exactly what to fix.</p></div>
+        </div>
+        <div class="feat">
+          <div class="feat-ic"><svg class="ic"><use href="#i-redo"/></svg></div>
+          <div><h3>Retake anytime</h3><p>Run the same set again after you improve, or start a new setup for a different role.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="ats-banner">
+        <div>
+          <div class="sec-label">Also included</div>
+          <h2>Resume ATS Checker</h2>
+          <p>Check your resume against a job description, see matched and missing keywords, and get an estimated ATS score before you apply.</p>
+          <div class="ats-list">
+            <span><svg class="ic"><use href="#i-check"/></svg>Keyword match</span>
+            <span><svg class="ic"><use href="#i-check"/></svg>Section and contact check</span>
+            <span><svg class="ic"><use href="#i-check"/></svg>Formatting tips</span>
+          </div>
+        </div>
+        <a class="btn btn-primary" href="resume.html" style="flex-shrink:0">Open checker<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="sec-label">FAQ</div>
+        <h2>Common questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>How are my answers scored?<svg class="ic"><use href="#i-plus"/></svg></summary>
+          <p>Each answer is sent to the Gemini AI model, which returns a score out of 10 and short feedback. Treat it as practice guidance, not a hiring verdict.</p>
+        </details>
+        <details>
+          <summary>What if the AI is not available?<svg class="ic"><use href="#i-plus"/></svg></summary>
+          <p>The app falls back to a general set of interview questions and a basic score, so you can still practice. Feedback will be less specific in that case.</p>
+        </details>
+        <details>
+          <summary>How do I get the most relevant questions?<svg class="ic"><use href="#i-plus"/></svg></summary>
+          <p>Paste your resume text in the box on the resume step. The more detail about projects and skills you include, the more specific the questions will be.</p>
+        </details>
+        <details>
+          <summary>Is the ATS score official?<svg class="ic"><use href="#i-plus"/></svg></summary>
+          <p>No. Real systems such as Workday or Greenhouse do not publish a score. The <a href="resume.html">ATS checker</a> is an estimate based on keywords, structure and formatting. Use the missing keywords and tips, and do not chase the exact number.</p>
+        </details>
+        <details>
+          <summary>Can I skip a question?<svg class="ic"><use href="#i-plus"/></svg></summary>
+          <p>Yes. Skipped questions are not counted in your average score and are marked as skipped in the report.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <div class="wrap">
+      <h2>Ready for a practice round?</h2>
+      <p>Ten questions take about twenty minutes.</p>
+      <button class="btn btn-primary" onclick="goPage(2)">Start interview prep<svg class="ic"><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="nav-logo"><span class="logo-mark"><svg class="ic"><use href="#i-message"/></svg></span>AI Interview Prep</div>
+          <p>Practice interviews from your own resume, with timed questions and feedback on every answer.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Product</h4>
+          <a onclick="goPage(2)">Start interview prep</a>
+          <a href="resume.html">Resume ATS checker</a>
+          <a href="#how">How it works</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="foot-col">
+          <h4>Project</h4>
+          <a href="https://github.com/Nimitraj143" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>GitHub</a>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 AI Interview Prep. Built by Nimit.</span>
+        <span>Powered by Google Gemini. Scores are estimates for practice.</span>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- PAGE 2: SETUP -->
 <div class="page" id="page2">
   <div class="setup">
     <div class="step-indicator">
-      <div class="step active" id="step1">
-        <div class="step-circle">1</div>
-        <div class="step-label">Setup</div>
-      </div>
+      <div class="step active" id="step1"><div class="step-circle">1</div><div class="step-label">Setup</div></div>
       <div class="step-line" id="line1"></div>
-      <div class="step" id="step2">
-        <div class="step-circle">2</div>
-        <div class="step-label">Resume</div>
-      </div>
+      <div class="step" id="step2"><div class="step-circle">2</div><div class="step-label">Resume</div></div>
       <div class="step-line" id="line2"></div>
-      <div class="step" id="step3">
-        <div class="step-circle">3</div>
-        <div class="step-label">Interview</div>
-      </div>
+      <div class="step" id="step3"><div class="step-circle">3</div><div class="step-label">Interview</div></div>
       <div class="step-line" id="line3"></div>
-      <div class="step" id="step4">
-        <div class="step-circle">4</div>
-        <div class="step-label">Results</div>
-      </div>
+      <div class="step" id="step4"><div class="step-circle">4</div><div class="step-label">Results</div></div>
     </div>
 
     <div class="setup-card">
@@ -316,9 +530,9 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
       <div class="frow">
         <label>Experience Level</label>
         <div class="level-grid">
-          <button class="level-opt sel" onclick="pickLevel(this,'Fresher')"><span class="level-icon">🌱</span>Fresher</button>
-          <button class="level-opt" onclick="pickLevel(this,'Mid-Level')"><span class="level-icon">🚀</span>Mid-Level</button>
-          <button class="level-opt" onclick="pickLevel(this,'Senior')"><span class="level-icon">⭐</span>Senior</button>
+          <button class="level-opt sel" onclick="pickLevel(this,'Fresher')"><svg class="ic"><use href="#i-sprout"/></svg>Fresher</button>
+          <button class="level-opt" onclick="pickLevel(this,'Mid-Level')"><svg class="ic"><use href="#i-trend"/></svg>Mid-Level</button>
+          <button class="level-opt" onclick="pickLevel(this,'Senior')"><svg class="ic"><use href="#i-star"/></svg>Senior</button>
         </div>
       </div>
 
@@ -341,8 +555,8 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
         </div>
       </div>
 
-      <button class="btn-next-step" onclick="goSetup()">Continue to Resume →</button>
-      <button class="btn-back" onclick="goPage(1)">← Back</button>
+      <button class="btn-next-step" onclick="goSetup()">Continue to resume<svg class="ic"><use href="#i-arrow-right"/></svg></button>
+      <button class="btn-back" onclick="goPage(1)"><svg class="ic"><use href="#i-arrow-left"/></svg>Back</button>
     </div>
   </div>
 </div>
@@ -356,26 +570,26 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
         <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" onchange="handleFile(this.files[0])">
-        <div class="upload-icon">📎</div>
+        <div class="upload-icon"><svg class="ic"><use href="#i-upload"/></svg></div>
         <h3>Drop your resume here</h3>
         <p>PDF, DOC, DOCX or TXT • Max 5MB</p>
       </div>
 
       <div class="file-info" id="fileInfo">
-        <span class="file-info-icon">📄</span>
+        <span class="file-info-icon"><svg class="ic"><use href="#i-file"/></svg></span>
         <div class="file-info-text">
           <div class="file-info-name" id="fileName">resume.pdf</div>
           <div class="file-info-size" id="fileSize">2.4 MB</div>
         </div>
-        <button class="file-remove" onclick="removeFile()">✕</button>
+        <button class="file-remove" onclick="removeFile()"><svg class="ic"><use href="#i-x"/></svg></button>
       </div>
 
       <div class="or-divider">or paste resume text</div>
 
       <textarea class="paste-box" id="resumeText" placeholder="Paste your resume content here — work experience, skills, education...&#10;&#10;Example:&#10;Name: Ravi Kumar&#10;Skills: React, Node.js, MongoDB&#10;Experience: 2 years at TechCorp..."></textarea>
 
-      <button class="btn-next-step" style="margin-top:24px" onclick="startInterview()">Generate Questions & Start →</button>
-      <button class="btn-back" onclick="goPage(2)">← Back</button>
+      <button class="btn-next-step" style="margin-top:24px" onclick="startInterview()">Generate questions &amp; start<svg class="ic"><use href="#i-arrow-right"/></svg></button>
+      <button class="btn-back" onclick="goPage(2)"><svg class="ic"><use href="#i-arrow-left"/></svg>Back</button>
     </div>
   </div>
 </div>
@@ -411,13 +625,13 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
     <div class="ans-label">Your Answer</div>
     <textarea class="ans-box" id="ansBox" placeholder="Type your answer here — be detailed, use examples..."></textarea>
     <div class="ans-footer">
-      <span>💡 Use the STAR method for behavioral questions</span>
+      <span><svg class="ic"><use href="#i-bulb"/></svg>Use the STAR method for behavioral questions</span>
       <span id="wordCount">0 words</span>
     </div>
 
     <div class="btn-row">
-      <button class="btn-skip-q" onclick="skipQ()">Skip ⏭</button>
-      <button class="btn-submit-q" onclick="nextQ()">Next Question →</button>
+      <button class="btn-skip-q" onclick="skipQ()">Skip<svg class="ic"><use href="#i-skip"/></svg></button>
+      <button class="btn-submit-q" onclick="nextQ()">Next question<svg class="ic"><use href="#i-arrow-right"/></svg></button>
     </div>
   </div>
 </div>
@@ -428,23 +642,17 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
     <div class="result-hero">
       <div class="score-ring">
         <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle fill="none" stroke="#1f2937" stroke-width="8" cx="80" cy="80" r="68"/>
-          <circle fill="none" stroke="url(#grad)" stroke-width="8" cx="80" cy="80" r="68"
+          <circle fill="none" stroke="#e7e5e4" stroke-width="8" cx="80" cy="80" r="68"/>
+          <circle fill="none" stroke="#2563eb" stroke-width="8" cx="80" cy="80" r="68"
             stroke-linecap="round" id="scoreArc"
             stroke-dasharray="427.3" stroke-dashoffset="427.3"/>
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:#00D9B5"/>
-              <stop offset="100%" style="stop-color:#00b4d8"/>
-            </linearGradient>
-          </defs>
         </svg>
         <div class="score-ring-text">
           <div class="score-big" id="scoreBig">0</div>
           <div class="score-label">/ 100</div>
         </div>
       </div>
-      <h2 id="resultTitle">Interview Complete!</h2>
+      <h2 id="resultTitle">Interview Complete</h2>
       <p id="resultSub">Here's how you performed</p>
     </div>
 
@@ -456,9 +664,9 @@ nav{position:relative;z-index:10;display:flex;align-items:center;justify-content
 
     <div class="qa-list" id="qaList"></div>
 
-    <div style="text-align:center">
-      <button class="btn-retake" onclick="retake()">↩ Retake Interview</button>
-      <button class="btn-new" onclick="goPage(1)">New Setup →</button>
+    <div class="result-actions">
+      <button class="btn btn-outline" onclick="retake()"><svg class="ic"><use href="#i-redo"/></svg>Retake interview</button>
+      <button class="btn btn-primary" onclick="goPage(1)">New setup<svg class="ic"><use href="#i-arrow-right"/></svg></button>
     </div>
   </div>
 </div>
@@ -492,7 +700,7 @@ const CIRCUMFERENCE = 150.8;
 function goPage(n) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page'+n).classList.add('active');
-  window.scrollTo(0,0);
+  if(!location.hash || n!==1) window.scrollTo(0,0);
   updateSteps(n);
 }
 
@@ -567,14 +775,12 @@ async function startInterview() {
 
   showLoading(true);
 
-  // Animate loading steps
   const steps = ['ls1','ls2','ls3','ls4'];
   for(let i=0;i<steps.length;i++){
     await delay(800);
     document.getElementById(steps[i]).classList.add('done');
   }
 
-  // Get resume text
   let resumeContent = pastedText;
   if(resumeFile && !pastedText) {
     resumeContent = `[Resume file: ${resumeFile.name}] Candidate name: ${config.name}, Target role: ${config.role}`;
@@ -647,7 +853,6 @@ function setupInterview() {
   document.getElementById('intLevel').textContent = config.level;
   document.getElementById('intDiff').textContent = config.diff;
 
-  // Build dots
   const dots = document.getElementById('qDots');
   dots.innerHTML = questions.map((_,i)=>`<div class="qdot${i===0?' curr':''}" id="qd${i}"></div>`).join('');
   loadQuestion();
@@ -690,7 +895,7 @@ function updateTimer() {
   const offset = CIRCUMFERENCE*(1-pct);
   const circle = document.getElementById('timerCircle');
   circle.style.strokeDashoffset = offset;
-  circle.style.stroke = timeLeft<=30?'#EF4444':timeLeft<=60?'#F59E0B':'#00D9B5';
+  circle.style.stroke = timeLeft<=30?'#dc2626':timeLeft<=60?'#b45309':'#2563eb';
 }
 
 function skipQ() {
@@ -728,7 +933,6 @@ async function finishInterview() {
   document.getElementById('ls3').className='ls';
   document.getElementById('ls4').className='ls';
 
-  // Score answers via API
   for(let i=0; i<answers.length; i++){
     if(answers[i].skipped) continue;
     await delay(300);
@@ -764,6 +968,10 @@ async function scoreAnswer(ans) {
   return await res.json();
 }
 
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function showResults() {
   const answered = answers.filter(a=>!a.skipped);
   const skipped = answers.filter(a=>a.skipped).length;
@@ -771,7 +979,6 @@ function showResults() {
     ? Math.round(answered.reduce((s,a)=>s+a.score,0)/answered.length*10)
     : 0;
 
-  // Animate score
   document.getElementById('rAnswered').textContent = answered.length;
   document.getElementById('rSkipped').textContent = skipped;
   document.getElementById('rAvgScore').textContent = answered.length
@@ -779,16 +986,15 @@ function showResults() {
     : '—';
 
   const titles = [
-    [80,'🏆 Excellent Performance!','You nailed it! Ready for the real thing.'],
-    [60,'👍 Good Job!','Strong performance with room to grow.'],
-    [40,'📈 Keep Practicing!','Decent effort — focus on weak areas.'],
-    [0,'💪 Keep Going!','Practice makes perfect. Review feedback below.']
+    [80,'Excellent performance','You nailed it. Ready for the real thing.'],
+    [60,'Good job','Strong performance with room to grow.'],
+    [40,'Keep practicing','Decent effort. Focus on weak areas.'],
+    [0,'Keep going','Practice makes perfect. Review the feedback below.']
   ];
   const [,title,sub] = titles.find(([t])=>totalScore>=t)||titles[3];
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('resultSub').textContent = `${config.name} — ${sub}`;
 
-  // Animate score arc
   setTimeout(()=>{
     document.getElementById('scoreBig').textContent = totalScore;
     const arc = document.getElementById('scoreArc');
@@ -797,20 +1003,19 @@ function showResults() {
     arc.style.strokeDashoffset = offset;
   }, 300);
 
-  // QA list
   document.getElementById('qaList').innerHTML = answers.map((a,i)=>{
     const cls = a.skipped?'skip':a.score>=8?'high':a.score>=5?'mid':'low';
     const badge = a.skipped?'—':(a.score||0);
     return `<div class="qa-item" onclick="toggleQA(this)">
       <div class="qa-head">
         <div class="qa-score-badge ${cls}">${badge}</div>
-        <div class="qa-q">Q${i+1}: ${a.q}</div>
-        <div class="qa-arr">⌄</div>
+        <div class="qa-q">Q${i+1}: ${esc(a.q)}</div>
+        <div class="qa-arr"><svg class="ic"><use href="#i-chevron"/></svg></div>
       </div>
       <div class="qa-body">
         <div class="qa-feedback-label">Your Answer</div>
-        <div class="qa-your-ans">${a.ans||'<em>Skipped</em>'}</div>
-        ${a.feedback?`<div class="qa-feedback-label" style="margin-top:12px">AI Feedback</div><div class="qa-ai-feedback">${a.feedback}</div>`:''}
+        <div class="qa-your-ans">${a.ans?esc(a.ans):'<em>Skipped</em>'}</div>
+        ${a.feedback?`<div class="qa-feedback-label">AI Feedback</div><div class="qa-ai-feedback">${esc(a.feedback)}</div>`:''}
       </div>
     </div>`;
   }).join('');
